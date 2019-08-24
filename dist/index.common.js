@@ -71,7 +71,7 @@ var menuMap = {
     var args = menu.params || [];
     $table.insertAt.apply($table, args[0] || []).then(function (_ref11) {
       var row = _ref11.row;
-      return args[1] ? $table.setActiveRow(row) : $table.setActiveCell.apply($table, [row].concat(args[1]));
+      return args[1] ? $table.setActiveCell.apply($table, [row].concat(args[1])) : $table.setActiveRow(row);
     });
   },
   DELETE_ROW: function DELETE_ROW(_ref12) {
