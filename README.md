@@ -26,36 +26,37 @@ VXETable.use(VXETablePluginMenus)
 
 ### Context menu codes
 
-| 编码 | 描述 |
-|------|------|
-| CLEAR_CELL | 清除单元格数据的值 |
-| CLEAR_ROW  | 清除行数据的值 |
-| CLEAR_SELECTION_ROW  | 清除选中行数据的值 |
-| CLEAR_ALL  | 清除所有数据的值 |
-| REVERT_CELL  | 还原单元格数据的值 |
-| REVERT_ROW  | 还原行数据的值 |
-| REVERT_SELECTION_ROW  | 还原选中行数据的值 |
-| REVERT_ALL  | 还原所有数据的值 |
-| INSERT_ROW | 新增行 |
-| INSERT_ACTIVED_ROW | 新增行并激活编辑状态 |
-| DELETE_ROW | 移除行数据 |
-| DELETE_SELECTION_ROW  | 移除选中行数据 |
-| DELETE_ALL | 移除所有行数据 |
-| EXPORT_ROW | 导出行数据 |
-| EXPORT_SELECTION_ROW | 导出选中行数据 |
-| EXPORT_ALL  | 导出所有行数据 |
-| HIDDEN_COLUMN | 隐藏列 |
-| RESET_COLUMN | 重置列可视状态 |
-| RESET_RESIZABLE | 重置列宽状态 |
-| RESET_ALL | 重置所有个性化数据 |
+| 编码 | 描述 | 参数 |
+|------|------|------|
+| CLEAR_CELL | 清除单元格数据的值 | — |
+| CLEAR_ROW  | 清除行数据的值 | — |
+| CLEAR_SELECTION_ROW  | 清除选中行数据的值 | — |
+| CLEAR_ALL  | 清除所有数据的值 | — |
+| REVERT_CELL  | 还原单元格数据的值 | — |
+| REVERT_ROW  | 还原行数据的值 | — |
+| REVERT_SELECTION_ROW  | 还原选中行数据的值 | — |
+| REVERT_ALL  | 还原所有数据的值 | — |
+| INSERT_ROW | 新增行 | Array\<records, row\> |
+| INSERT_ACTIVED_ROW | 新增行并激活编辑状态 | Array<Array\<records, row\>, Array\<field\>> |
+| DELETE_ROW | 移除行数据 | — |
+| DELETE_SELECTION_ROW  | 移除选中行数据 | — |
+| DELETE_ALL | 移除所有行数据 | — |
+| EXPORT_ROW | 导出行数据 | Object |
+| EXPORT_SELECTION_ROW | 导出选中行数据 | Object |
+| EXPORT_ALL  | 导出所有行数据 | Object |
+| HIDDEN_COLUMN | 隐藏列 | — |
+| RESET_COLUMN | 重置列可视状态 | — |
+| RESET_RESIZABLE | 重置列宽状态 | — |
+| RESET_ALL | 重置所有个性化数据 | — |
 
 ## demo
 
 ```html
 <vxe-table
   border
+  :data.sync="tableData"
   :context-menu="{body: {options: bodyMenus}}"
-  :data.sync="tableData">
+  :edit-config="{trigger: 'click', mode: 'cell'}">
   <vxe-table-column type="index" width="60"></vxe-table-column>
   <vxe-table-column field="name" title="Name" :edit-render="{name: 'input'}"></vxe-table-column>
   <vxe-table-column field="sex" title="sex" :edit-render="{name: 'input'}"></vxe-table-column>

@@ -39,7 +39,7 @@ const menuMap = {
   INSERT_ACTIVED_ROW ({ $table, menu }) {
     const args = menu.params || []
     $table.insertAt.apply($table, args[0] || [])
-      .then(({ row }) => args[1] ? $table.setActiveRow(row) : $table.setActiveCell.apply($table, [row].concat(args[1])))
+      .then(({ row }) => args[1] ? $table.setActiveCell.apply($table, [row].concat(args[1])) : $table.setActiveRow(row))
   },
   DELETE_ROW ({ $table, row }) {
     if (row) {
