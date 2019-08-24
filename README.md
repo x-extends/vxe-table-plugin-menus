@@ -26,7 +26,7 @@ VXETable.use(VXETablePluginMenus)
 
 ### Context menu codes
 
-| 编码 | 描述 | 参数 |
+| code 编码 | 描述 | params 参数 |
 |------|------|------|
 | CLEAR_CELL | 清除单元格数据的值 | — |
 | CLEAR_ROW  | 清除行数据的值 | — |
@@ -41,9 +41,9 @@ VXETable.use(VXETablePluginMenus)
 | DELETE_ROW | 移除行数据 | — |
 | DELETE_SELECTION_ROW  | 移除选中行数据 | — |
 | DELETE_ALL | 移除所有行数据 | — |
-| EXPORT_ROW | 导出行数据 | Object |
-| EXPORT_SELECTION_ROW | 导出选中行数据 | Object |
-| EXPORT_ALL  | 导出所有行数据 | Object |
+| EXPORT_ROW | 导出行数据 | options |
+| EXPORT_SELECTION_ROW | 导出选中行数据 | options |
+| EXPORT_ALL  | 导出所有行数据 | options |
 | HIDDEN_COLUMN | 隐藏列 | — |
 | RESET_COLUMN | 重置列可视状态 | — |
 | RESET_RESIZABLE | 重置列宽状态 | — |
