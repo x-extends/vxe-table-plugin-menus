@@ -34,12 +34,24 @@ const menuMap = {
     $table.revertData()
   },
   INSERT_ROW ({ $table, menu }) {
-    $table.insertAt.apply($table, menu.params || [])
+    $table.insert(menu.params)
   },
-  INSERT_ACTIVED_ROW ({ $table, menu }) {
+  INSERT_ACTIVED_ROW ({ $table, menu, column }) {
     const args = menu.params || []
-    $table.insertAt.apply($table, args[0] || [])
-      .then(({ row }) => args[1] ? $table.setActiveCell.apply($table, [row].concat(args[1])) : $table.setActiveRow(row))
+    $table.insert(args[0])
+      .then(({ row }) => $table.setActiveCell(row, args[1] || column.property))
+  },
+  INSERT_AT_ROW ({ $table, menu, row }) {
+    if (row) {
+      $table.insertAt(menu.params, row)
+    }
+  },
+  INSERT_AT_ACTIVED_ROW ({ $table, menu, row, column }) {
+    if (row) {
+      const args = menu.params || []
+      $table.insertAt(args[0], row)
+        .then(({ row }) => $table.setActiveCell(row, args[1] || column.property))
+    }
   },
   DELETE_ROW ({ $table, row }) {
     if (row) {
@@ -51,6 +63,41 @@ const menuMap = {
   },
   DELETE_ALL ({ $table }) {
     $table.remove()
+  },
+  CLEAR_SORT ({ $table }) {
+    $table.clearSort()
+  },
+  SORT_ASC ({ $table, column }) {
+    if (column) {
+      $table.sort(column.property, 'asc')
+    }
+  },
+  SORT_DESC ({ $table, column }) {
+    if (column) {
+      $table.sort(column.property, 'desc')
+    }
+  },
+  CLEAR_FILTER ({ $table, column }) {
+    if (column) {
+      $table.clearFilter(column.property)
+    }
+  },
+  CLEAR_ALL_FILTER ({ $table }) {
+    $table.clearFilter()
+  },
+  FILTER_CELL ({ $table, row, column }) {
+    if (row && column) {
+      let { property } = column
+      $table.filter(property)
+        .then(options => {
+          if (options.length) {
+            let option = options[0]
+            option.data = XEUtils.get(row, property)
+            option.checked = true
+          }
+        })
+        .then(() => $table.updateData())
+    }
   },
   EXPORT_ROW ({ $table, menu, row }) {
     if (row) {
@@ -81,8 +128,68 @@ const menuMap = {
   }
 }
 
+function checkPrivilege (item, { columns, column }) {
+  let { code } = item
+  switch (code) {
+    case 'CLEAR_SORT':
+      item.disabled = !columns.some(column => column.sortable && column.order)
+      break
+    case 'CLEAR_ALL_FILTER':
+      item.disabled = !columns.some(column => column.filters && column.filters.some(option => option.checked))
+      break
+    case 'CLEAR_CELL':
+    case 'CLEAR_ROW':
+    case 'REVERT_CELL':
+    case 'REVERT_ROW':
+    case 'INSERT_AT_ROW':
+    case 'INSERT_AT_ACTIVED_ROW':
+    case 'DELETE_ROW':
+    case 'SORT_ASC':
+    case 'SORT_DESC':
+    case 'CLEAR_FILTER':
+    case 'FILTER_CELL':
+    case 'EXPORT_ROW':
+    case 'HIDDEN_COLUMN':
+      item.disabled = !column
+      if (!item.disabled) {
+        switch (code) {
+          case 'SORT_ASC':
+          case 'SORT_DESC':
+            item.disabled = !column.sortable
+            break
+          case 'FILTER_CELL':
+          case 'CLEAR_FILTER':
+            item.disabled = !column.filters || !column.filters.length
+            if (!item.disabled) {
+              switch (code) {
+                case 'CLEAR_FILTER':
+                  item.disabled = !column.filters.some(option => option.checked)
+                  break
+              }
+            }
+            break
+        }
+      }
+      break
+  }
+}
+
+function handlePrivilegeEvent (params) {
+  params.options.forEach(list => {
+    list.forEach(item => {
+      checkPrivilege(item, params)
+      if (item.children) {
+        item.children.forEach(child => {
+          checkPrivilege(child, params)
+        })
+      }
+    })
+  })
+}
+
 export const VXETablePluginMenus = {
-  install ({ menus }) {
+  install ({ menus, interceptor }) {
+    interceptor.add('event.show_menu', handlePrivilegeEvent)
     menus.mixin(menuMap)
   }
 }

@@ -36,11 +36,18 @@ VXETable.use(VXETablePluginMenus)
 | REVERT_ROW  | 还原行数据的值 | — |
 | REVERT_SELECTION_ROW  | 还原选中行数据的值 | — |
 | REVERT_ALL  | 还原所有数据的值 | — |
-| INSERT_ROW | 新增行 | Array\<records, row\> |
-| INSERT_ACTIVED_ROW | 新增行并激活编辑状态 | Array<Array\<records, row\>, Array\<field\>> |
+| INSERT_ROW | 插入数据 | records |
+| INSERT_ACTIVED_ROW | 插入数据并激活编辑状态 | Array\<records, field\> |
+| INSERT_AT_ROW | 插入数据到指定位置并激活编辑状态 | records |
+| INSERT_AT_ACTIVED_ROW | 插入数据到指定位置并激活编辑状态 | Array\<records, field\> |
 | DELETE_ROW | 移除行数据 | — |
 | DELETE_SELECTION_ROW  | 移除选中行数据 | — |
 | DELETE_ALL | 移除所有行数据 | — |
+| CLEAR_SORT | 清除排序条件 | — |
+| SORT_ASC | 按所选列的值升序 | — |
+| SORT_DESC | 按所选列的值倒序 | — |
+| CLEAR_FILTER | 清除选中列的筛选条件 | — |
+| CLEAR_ALL_FILTER | 清除所有列筛选条件 | — |
 | EXPORT_ROW | 导出行数据 | options |
 | EXPORT_SELECTION_ROW | 导出选中行数据 | options |
 | EXPORT_ALL  | 导出所有行数据 | options |

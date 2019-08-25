@@ -63,37 +63,111 @@ var menuMap = {
   INSERT_ROW: function INSERT_ROW(_ref9) {
     var $table = _ref9.$table,
         menu = _ref9.menu;
-    $table.insertAt.apply($table, menu.params || []);
+    $table.insert(menu.params);
   },
   INSERT_ACTIVED_ROW: function INSERT_ACTIVED_ROW(_ref10) {
     var $table = _ref10.$table,
-        menu = _ref10.menu;
+        menu = _ref10.menu,
+        column = _ref10.column;
     var args = menu.params || [];
-    $table.insertAt.apply($table, args[0] || []).then(function (_ref11) {
+    $table.insert(args[0]).then(function (_ref11) {
       var row = _ref11.row;
-      return args[1] ? $table.setActiveCell.apply($table, [row].concat(args[1])) : $table.setActiveRow(row);
+      return $table.setActiveCell(row, args[1] || column.property);
     });
   },
-  DELETE_ROW: function DELETE_ROW(_ref12) {
+  INSERT_AT_ROW: function INSERT_AT_ROW(_ref12) {
     var $table = _ref12.$table,
+        menu = _ref12.menu,
         row = _ref12.row;
+
+    if (row) {
+      $table.insertAt(menu.params, row);
+    }
+  },
+  INSERT_AT_ACTIVED_ROW: function INSERT_AT_ACTIVED_ROW(_ref13) {
+    var $table = _ref13.$table,
+        menu = _ref13.menu,
+        row = _ref13.row,
+        column = _ref13.column;
+
+    if (row) {
+      var args = menu.params || [];
+      $table.insertAt(args[0], row).then(function (_ref14) {
+        var row = _ref14.row;
+        return $table.setActiveCell(row, args[1] || column.property);
+      });
+    }
+  },
+  DELETE_ROW: function DELETE_ROW(_ref15) {
+    var $table = _ref15.$table,
+        row = _ref15.row;
 
     if (row) {
       $table.remove(row);
     }
   },
-  DELETE_SELECTION_ROW: function DELETE_SELECTION_ROW(_ref13) {
-    var $table = _ref13.$table;
+  DELETE_SELECTION_ROW: function DELETE_SELECTION_ROW(_ref16) {
+    var $table = _ref16.$table;
     $table.removeSelecteds();
   },
-  DELETE_ALL: function DELETE_ALL(_ref14) {
-    var $table = _ref14.$table;
+  DELETE_ALL: function DELETE_ALL(_ref17) {
+    var $table = _ref17.$table;
     $table.remove();
   },
-  EXPORT_ROW: function EXPORT_ROW(_ref15) {
-    var $table = _ref15.$table,
-        menu = _ref15.menu,
-        row = _ref15.row;
+  CLEAR_SORT: function CLEAR_SORT(_ref18) {
+    var $table = _ref18.$table;
+    $table.clearSort();
+  },
+  SORT_ASC: function SORT_ASC(_ref19) {
+    var $table = _ref19.$table,
+        column = _ref19.column;
+
+    if (column) {
+      $table.sort(column.property, 'asc');
+    }
+  },
+  SORT_DESC: function SORT_DESC(_ref20) {
+    var $table = _ref20.$table,
+        column = _ref20.column;
+
+    if (column) {
+      $table.sort(column.property, 'desc');
+    }
+  },
+  CLEAR_FILTER: function CLEAR_FILTER(_ref21) {
+    var $table = _ref21.$table,
+        column = _ref21.column;
+
+    if (column) {
+      $table.clearFilter(column.property);
+    }
+  },
+  CLEAR_ALL_FILTER: function CLEAR_ALL_FILTER(_ref22) {
+    var $table = _ref22.$table;
+    $table.clearFilter();
+  },
+  FILTER_CELL: function FILTER_CELL(_ref23) {
+    var $table = _ref23.$table,
+        row = _ref23.row,
+        column = _ref23.column;
+
+    if (row && column) {
+      var property = column.property;
+      $table.filter(property).then(function (options) {
+        if (options.length) {
+          var option = options[0];
+          option.data = _xeUtils["default"].get(row, property);
+          option.checked = true;
+        }
+      }).then(function () {
+        return $table.updateData();
+      });
+    }
+  },
+  EXPORT_ROW: function EXPORT_ROW(_ref24) {
+    var $table = _ref24.$table,
+        menu = _ref24.menu,
+        row = _ref24.row;
 
     if (row) {
       var opts = {
@@ -102,42 +176,123 @@ var menuMap = {
       $table.exportCsv(menu.params ? _xeUtils["default"].assign(opts, menu.params[0]) : opts);
     }
   },
-  EXPORT_SELECTION_ROW: function EXPORT_SELECTION_ROW(_ref16) {
-    var $table = _ref16.$table,
-        menu = _ref16.menu;
+  EXPORT_SELECTION_ROW: function EXPORT_SELECTION_ROW(_ref25) {
+    var $table = _ref25.$table,
+        menu = _ref25.menu;
     var opts = {
       data: $table.getSelectRecords()
     };
     $table.exportCsv(menu.params ? _xeUtils["default"].assign(opts, menu.params[0]) : opts);
   },
-  EXPORT_ALL: function EXPORT_ALL(_ref17) {
-    var $table = _ref17.$table;
+  EXPORT_ALL: function EXPORT_ALL(_ref26) {
+    var $table = _ref26.$table;
     $table.exportCsv();
   },
-  HIDDEN_COLUMN: function HIDDEN_COLUMN(_ref18) {
-    var $table = _ref18.$table,
-        column = _ref18.column;
+  HIDDEN_COLUMN: function HIDDEN_COLUMN(_ref27) {
+    var $table = _ref27.$table,
+        column = _ref27.column;
 
     if (column) {
       $table.hideColumn();
     }
   },
-  RESET_COLUMN: function RESET_COLUMN(_ref19) {
-    var $table = _ref19.$table;
+  RESET_COLUMN: function RESET_COLUMN(_ref28) {
+    var $table = _ref28.$table;
     $table.resetCustoms();
   },
-  RESET_RESIZABLE: function RESET_RESIZABLE(_ref20) {
-    var $table = _ref20.$table;
+  RESET_RESIZABLE: function RESET_RESIZABLE(_ref29) {
+    var $table = _ref29.$table;
     $table.resetResizable();
   },
-  RESET_ALL: function RESET_ALL(_ref21) {
-    var $table = _ref21.$table;
+  RESET_ALL: function RESET_ALL(_ref30) {
+    var $table = _ref30.$table;
     $table.resetAll();
   }
 };
+
+function checkPrivilege(item, _ref31) {
+  var columns = _ref31.columns,
+      column = _ref31.column;
+  var code = item.code;
+
+  switch (code) {
+    case 'CLEAR_SORT':
+      item.disabled = !columns.some(function (column) {
+        return column.sortable && column.order;
+      });
+      break;
+
+    case 'CLEAR_ALL_FILTER':
+      item.disabled = !columns.some(function (column) {
+        return column.filters && column.filters.some(function (option) {
+          return option.checked;
+        });
+      });
+      break;
+
+    case 'CLEAR_CELL':
+    case 'CLEAR_ROW':
+    case 'REVERT_CELL':
+    case 'REVERT_ROW':
+    case 'INSERT_AT_ROW':
+    case 'INSERT_AT_ACTIVED_ROW':
+    case 'DELETE_ROW':
+    case 'SORT_ASC':
+    case 'SORT_DESC':
+    case 'CLEAR_FILTER':
+    case 'FILTER_CELL':
+    case 'EXPORT_ROW':
+    case 'HIDDEN_COLUMN':
+      item.disabled = !column;
+
+      if (!item.disabled) {
+        switch (code) {
+          case 'SORT_ASC':
+          case 'SORT_DESC':
+            item.disabled = !column.sortable;
+            break;
+
+          case 'FILTER_CELL':
+          case 'CLEAR_FILTER':
+            item.disabled = !column.filters || !column.filters.length;
+
+            if (!item.disabled) {
+              switch (code) {
+                case 'CLEAR_FILTER':
+                  item.disabled = !column.filters.some(function (option) {
+                    return option.checked;
+                  });
+                  break;
+              }
+            }
+
+            break;
+        }
+      }
+
+      break;
+  }
+}
+
+function handlePrivilegeEvent(params) {
+  params.options.forEach(function (list) {
+    list.forEach(function (item) {
+      checkPrivilege(item, params);
+
+      if (item.children) {
+        item.children.forEach(function (child) {
+          checkPrivilege(child, params);
+        });
+      }
+    });
+  });
+}
+
 var VXETablePluginMenus = {
-  install: function install(_ref22) {
-    var menus = _ref22.menus;
+  install: function install(_ref32) {
+    var menus = _ref32.menus,
+        interceptor = _ref32.interceptor;
+    interceptor.add('event.show_menu', handlePrivilegeEvent);
     menus.mixin(menuMap);
   }
 };
