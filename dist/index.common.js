@@ -210,10 +210,10 @@ var menuMap = {
   }
 };
 
-function checkPrivilege(item, _ref31) {
-  var columns = _ref31.columns,
-      column = _ref31.column;
+function checkPrivilege(item, params) {
   var code = item.code;
+  var columns = params.columns,
+      column = params.column;
 
   switch (code) {
     case 'CLEAR_SORT':
@@ -289,9 +289,9 @@ function handlePrivilegeEvent(params) {
 }
 
 var VXETablePluginMenus = {
-  install: function install(_ref32) {
-    var menus = _ref32.menus,
-        interceptor = _ref32.interceptor;
+  install: function install(_ref31) {
+    var menus = _ref31.menus,
+        interceptor = _ref31.interceptor;
     interceptor.add('event.show_menu', handlePrivilegeEvent);
     menus.mixin(menuMap);
   }

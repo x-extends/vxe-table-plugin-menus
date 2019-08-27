@@ -128,8 +128,9 @@ const menuMap = {
   }
 }
 
-function checkPrivilege (item, { columns, column }) {
+function checkPrivilege (item, params) {
   let { code } = item
+  let { columns, column } = params
   switch (code) {
     case 'CLEAR_SORT':
       item.disabled = !columns.some(column => column.sortable && column.order)
