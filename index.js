@@ -189,7 +189,8 @@ function handlePrivilegeEvent (params) {
 }
 
 export const VXETablePluginMenus = {
-  install ({ menus, interceptor }) {
+  install (VXETable) {
+    let { interceptor, menus } = VXETable
     interceptor.add('event.show_menu', handlePrivilegeEvent)
     menus.mixin(menuMap)
   }
