@@ -61,7 +61,7 @@ VXETable.use(VXETablePluginMenus)
 ```html
 <vxe-table
   border
-  :data.sync="tableData"
+  :data="tableData"
   :context-menu="{body: {options: bodyMenus}}"
   :edit-config="{trigger: 'click', mode: 'cell'}">
   <vxe-table-column type="index" width="60"></vxe-table-column>
