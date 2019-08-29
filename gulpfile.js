@@ -21,6 +21,7 @@ gulp.task('build_commonjs', function () {
 
 gulp.task('build_umd', function () {
   return gulp.src('index.js')
+    .pipe(replace(`from 'xe-utils/methods/xe-utils'`, `from 'xe-utils'`))
     .pipe(babel({
       moduleId: pack.name,
       presets: ['@babel/env'],

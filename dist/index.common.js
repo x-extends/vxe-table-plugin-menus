@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = exports.VXETablePluginMenus = void 0;
 
-var _xeUtils = _interopRequireDefault(require("xe-utils"));
+var _xeUtils = _interopRequireDefault(require("xe-utils/methods/xe-utils"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -289,9 +289,9 @@ function handlePrivilegeEvent(params) {
 }
 
 var VXETablePluginMenus = {
-  install: function install(_ref31) {
-    var menus = _ref31.menus,
-        interceptor = _ref31.interceptor;
+  install: function install(VXETable) {
+    var interceptor = VXETable.interceptor,
+        menus = VXETable.menus;
     interceptor.add('event.show_menu', handlePrivilegeEvent);
     menus.mixin(menuMap);
   }

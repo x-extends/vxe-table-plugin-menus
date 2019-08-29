@@ -301,9 +301,9 @@
   }
 
   var VXETablePluginMenus = {
-    install: function install(_ref31) {
-      var menus = _ref31.menus,
-          interceptor = _ref31.interceptor;
+    install: function install(VXETable) {
+      var interceptor = VXETable.interceptor,
+          menus = VXETable.menus;
       interceptor.add('event.show_menu', handlePrivilegeEvent);
       menus.mixin(menuMap);
     }
