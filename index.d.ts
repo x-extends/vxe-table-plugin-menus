@@ -5,7 +5,7 @@ export interface VXETablePluginStatic {
 }
 
 /**
- * vxe-table context menu plugins.
+ * 基于 vxe-table 表格的增强插件，提供实用的快捷菜单集
  */
 declare var VXETablePluginMenus: VXETablePluginStatic;
 
