@@ -67,14 +67,14 @@ const menuMap = {
   CLEAR_SORT ({ $table }) {
     $table.clearSort()
   },
-  SORT_ASC ({ $table, column }) {
+  SORT_ASC ({ $table, column }, evnt) {
     if (column) {
-      $table.sort(column.property, 'asc')
+      $table.triggerSortEvent(evnt, column, 'asc')
     }
   },
-  SORT_DESC ({ $table, column }) {
+  SORT_DESC ({ $table, column }, evnt) {
     if (column) {
-      $table.sort(column.property, 'desc')
+      $table.triggerSortEvent(evnt, column, 'desc')
     }
   },
   CLEAR_FILTER ({ $table, column }) {
