@@ -1,13 +1,14 @@
 {
   "name": "vxe-table-plugin-menus",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "基于 vxe-table 表格的增强插件，提供实用的快捷菜单集",
   "scripts": {
     "lib": "gulp build"
   },
   "files": [
     "dist",
-    "index.ts"
+    "index.ts",
+    "index.d.ts"
   ],
   "main": "dist/index.common.js",
   "style": "dist/style.min.css",
@@ -19,14 +20,19 @@
     "@babel/plugin-transform-runtime": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
     "@babel/runtime": "^7.4.4",
+    "@typescript-eslint/eslint-plugin": "^2.3.1",
+    "@typescript-eslint/parser": "^2.3.1",
     "del": "^5.1.0",
     "eslint": "^5.15.1",
     "eslint-config-standard": "^12.0.0",
+    "eslint-config-prettier": "^6.3.0",
     "eslint-friendly-formatter": "^4.0.1",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-typescript": "^0.14.0",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^6.1.0",
     "gulp-babel": "^8.0.0",
@@ -39,6 +45,7 @@
     "gulp-typescript": "^5.0.1",
     "gulp-uglify": "^3.0.2",
     "markdown-doctest": "^0.9.1",
+    "prettier": "^1.18.2",
     "typescript": "^3.6.3",
     "vue": "^2.6.10",
     "vxe-table": "^2.5.22",
