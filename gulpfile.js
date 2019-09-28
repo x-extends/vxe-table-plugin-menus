@@ -11,7 +11,7 @@ const pack = require('./package.json')
 const exportModuleName = 'VXETablePluginMenus'
 
 gulp.task('build_commonjs', function () {
-  return gulp.src(['test.ts', 'index.ts'])
+  return gulp.src(['depend.ts', 'index.ts'])
     .pipe(sourcemaps.init())
     .pipe(ts({
       noImplicitAny: true
@@ -28,7 +28,7 @@ gulp.task('build_commonjs', function () {
 })
 
 gulp.task('build_umd', function () {
-  return gulp.src(['test.ts', 'index.ts'])
+  return gulp.src(['depend.ts', 'index.ts'])
     .pipe(ts({
       noImplicitAny: true
     }))
@@ -55,7 +55,7 @@ gulp.task('build_umd', function () {
 
 gulp.task('clear', () => {
   return del([
-    'dist/test.*'
+    'dist/depend.*'
   ])
 })
 
