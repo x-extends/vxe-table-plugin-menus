@@ -14,8 +14,11 @@ gulp.task('build_commonjs', function () {
   return gulp.src(['depend.ts', 'index.ts'])
     .pipe(sourcemaps.init())
     .pipe(ts({
+      strict: true,
+      moduleResolution: 'node',
       noImplicitAny: true,
-      target: 'es6'
+      target: 'es6',
+      lib: ['dom', 'es6']
     }))
     .pipe(babel({
       presets: ['@babel/env']
@@ -31,8 +34,11 @@ gulp.task('build_commonjs', function () {
 gulp.task('build_umd', function () {
   return gulp.src(['depend.ts', 'index.ts'])
     .pipe(ts({
+      strict: true,
+      moduleResolution: 'node',
       noImplicitAny: true,
-      target: 'es6'
+      target: 'es6',
+      lib: ['dom', 'es6']
     }))
     .pipe(replace(`import XEUtils from 'xe-utils/methods/xe-utils';`, `import XEUtils from 'xe-utils';`))
     .pipe(babel({

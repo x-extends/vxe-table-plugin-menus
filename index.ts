@@ -1,5 +1,5 @@
 import XEUtils from 'xe-utils/methods/xe-utils'
-// import { VXETable } from 'vxe-table'
+import VXETable from 'vxe-table/lib/vxe-table'
 
 const menuMap = {
   CLEAR_CELL ({ $table, row, column }: any) {
@@ -193,7 +193,7 @@ function handlePrivilegeEvent (params: any) {
  * 基于 vxe-table 表格的增强插件，提供实用的快捷菜单集
  */
 export const VXETablePluginMenus = {
-  install (xtable: any) {
+  install (xtable: typeof VXETable) {
     xtable.interceptor.add('event.show_menu', handlePrivilegeEvent)
     xtable.menus.mixin(menuMap)
   }

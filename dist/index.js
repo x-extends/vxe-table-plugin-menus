@@ -21,7 +21,6 @@
 
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-  // import { VXETable } from 'vxe-table'
   var menuMap = {
     CLEAR_CELL: function CLEAR_CELL(_ref) {
       var $table = _ref.$table,
