@@ -306,7 +306,7 @@
 
   var VXETablePluginMenus = {
     install: function install(xtable) {
-      xtable.interceptor.add('event.show_menu', handlePrivilegeEvent);
+      xtable.interceptor.add('event.showMenu', handlePrivilegeEvent);
       xtable.menus.mixin(menuMap);
     }
   };
