@@ -103,15 +103,15 @@ const menuMap = {
   EXPORT_ROW ({ $table, menu, row }: any) {
     if (row) {
       let opts = { data: [row] }
-      $table.exportCsv(menu.params ? XEUtils.assign(opts, menu.params[0]) : opts)
+      $table.exportData(menu.params ? XEUtils.assign(opts, menu.params[0]) : opts)
     }
   },
   EXPORT_SELECTION_ROW ({ $table, menu }: any) {
     let opts = { data: $table.getSelectRecords() }
-    $table.exportCsv(menu.params ? XEUtils.assign(opts, menu.params[0]) : opts)
+    $table.exportData(menu.params ? XEUtils.assign(opts, menu.params[0]) : opts)
   },
   EXPORT_ALL ({ $table }: any) {
-    $table.exportCsv()
+    $table.exportData()
   },
   HIDDEN_COLUMN ({ $table, column }: any) {
     if (column) {
