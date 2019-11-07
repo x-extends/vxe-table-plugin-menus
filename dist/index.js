@@ -185,7 +185,7 @@
         var opts = {
           data: [row]
         };
-        $table.exportCsv(menu.params ? _xeUtils["default"].assign(opts, menu.params[0]) : opts);
+        $table.exportData(menu.params ? _xeUtils["default"].assign(opts, menu.params[0]) : opts);
       }
     },
     EXPORT_SELECTION_ROW: function EXPORT_SELECTION_ROW(_ref25) {
@@ -194,11 +194,12 @@
       var opts = {
         data: $table.getSelectRecords()
       };
-      $table.exportCsv(menu.params ? _xeUtils["default"].assign(opts, menu.params[0]) : opts);
+      $table.exportData(menu.params ? _xeUtils["default"].assign(opts, menu.params[0]) : opts);
     },
     EXPORT_ALL: function EXPORT_ALL(_ref26) {
-      var $table = _ref26.$table;
-      $table.exportCsv();
+      var $table = _ref26.$table,
+          menu = _ref26.menu;
+      $table.exportData(menu.params);
     },
     HIDDEN_COLUMN: function HIDDEN_COLUMN(_ref27) {
       var $table = _ref27.$table,

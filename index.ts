@@ -110,8 +110,8 @@ const menuMap = {
     let opts = { data: $table.getSelectRecords() }
     $table.exportData(menu.params ? XEUtils.assign(opts, menu.params[0]) : opts)
   },
-  EXPORT_ALL ({ $table }: any) {
-    $table.exportData()
+  EXPORT_ALL ({ $table, menu }: any) {
+    $table.exportData(menu.params)
   },
   HIDDEN_COLUMN ({ $table, column }: any) {
     if (column) {
