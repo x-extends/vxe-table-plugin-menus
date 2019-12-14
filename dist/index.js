@@ -10,7 +10,7 @@
     factory(mod.exports, global.XEUtils);
     global.VXETablePluginMenus = mod.exports.default;
   }
-})(this, function (_exports, _xeUtils) {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function (_exports, _xeUtils) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -39,7 +39,7 @@
         $table.clearData(row);
       }
     },
-    CLEAR_SELECTION_ROW: function CLEAR_SELECTION_ROW(_ref3) {
+    CLEAR_SELECTED_ROW: function CLEAR_SELECTED_ROW(_ref3) {
       var $table = _ref3.$table;
       $table.clearData($table.getSelectRecords());
     },
@@ -64,7 +64,7 @@
         $table.revertData(row);
       }
     },
-    REVERT_SELECTION_ROW: function REVERT_SELECTION_ROW(_ref7) {
+    REVERT_SELECTED_ROW: function REVERT_SELECTED_ROW(_ref7) {
       var $table = _ref7.$table;
       $table.revertData($table.getSelectRecords());
     },
@@ -118,7 +118,7 @@
         $table.remove(row);
       }
     },
-    DELETE_SELECTION_ROW: function DELETE_SELECTION_ROW(_ref16) {
+    DELETE_SELECTED_ROW: function DELETE_SELECTED_ROW(_ref16) {
       var $table = _ref16.$table;
       $table.removeSelecteds();
     },
@@ -185,40 +185,53 @@
         var opts = {
           data: [row]
         };
-        $table.exportData(menu.params ? _xeUtils["default"].assign(opts, menu.params[0]) : opts);
+        $table.exportData(_xeUtils["default"].assign(opts, menu.params[0]));
       }
     },
-    EXPORT_SELECTION_ROW: function EXPORT_SELECTION_ROW(_ref25) {
+    EXPORT_SELECTED_ROW: function EXPORT_SELECTED_ROW(_ref25) {
       var $table = _ref25.$table,
           menu = _ref25.menu;
       var opts = {
         data: $table.getSelectRecords()
       };
-      $table.exportData(menu.params ? _xeUtils["default"].assign(opts, menu.params[0]) : opts);
+      $table.exportData(_xeUtils["default"].assign(opts, menu.params[0]));
     },
     EXPORT_ALL: function EXPORT_ALL(_ref26) {
       var $table = _ref26.$table,
           menu = _ref26.menu;
       $table.exportData(menu.params);
     },
-    HIDDEN_COLUMN: function HIDDEN_COLUMN(_ref27) {
+    PRINT_ALL: function PRINT_ALL(_ref27) {
       var $table = _ref27.$table,
-          column = _ref27.column;
+          menu = _ref27.menu;
+      $table.print(menu.params);
+    },
+    PRINT_SELECTED_ROW: function PRINT_SELECTED_ROW(_ref28) {
+      var $table = _ref28.$table,
+          menu = _ref28.menu;
+      var opts = {
+        data: $table.getSelectRecords()
+      };
+      $table.print(_xeUtils["default"].assign(opts, menu.params));
+    },
+    HIDDEN_COLUMN: function HIDDEN_COLUMN(_ref29) {
+      var $table = _ref29.$table,
+          column = _ref29.column;
 
       if (column) {
         $table.hideColumn();
       }
     },
-    RESET_COLUMN: function RESET_COLUMN(_ref28) {
-      var $table = _ref28.$table;
+    RESET_COLUMN: function RESET_COLUMN(_ref30) {
+      var $table = _ref30.$table;
       $table.resetCustoms();
     },
-    RESET_RESIZABLE: function RESET_RESIZABLE(_ref29) {
-      var $table = _ref29.$table;
+    RESET_RESIZABLE: function RESET_RESIZABLE(_ref31) {
+      var $table = _ref31.$table;
       $table.resetResizable();
     },
-    RESET_ALL: function RESET_ALL(_ref30) {
-      var $table = _ref30.$table;
+    RESET_ALL: function RESET_ALL(_ref32) {
+      var $table = _ref32.$table;
       $table.resetAll();
     }
   };
