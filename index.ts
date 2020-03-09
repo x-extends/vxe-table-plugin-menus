@@ -60,7 +60,11 @@ const menuMap = {
     }
   },
   DELETE_SELECTED_ROW({ $table }: any) {
-    $table.removeSelecteds()
+    if ($table.removeCheckboxRow) {
+      $table.removeCheckboxRow()
+    } else {
+      $table.removeSelecteds()
+    }
   },
   DELETE_ALL({ $table }: any) {
     $table.remove()

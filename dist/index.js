@@ -120,7 +120,12 @@
     },
     DELETE_SELECTED_ROW: function DELETE_SELECTED_ROW(_ref16) {
       var $table = _ref16.$table;
-      $table.removeSelecteds();
+
+      if ($table.removeCheckboxRow) {
+        $table.removeCheckboxRow();
+      } else {
+        $table.removeSelecteds();
+      }
     },
     DELETE_ALL: function DELETE_ALL(_ref17) {
       var $table = _ref17.$table;
