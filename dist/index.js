@@ -22,169 +22,163 @@
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
   var menuMap = {
-    CLEAR_CELL: function CLEAR_CELL(_ref) {
-      var $table = _ref.$table,
-          row = _ref.row,
-          column = _ref.column;
+    CLEAR_CELL: function CLEAR_CELL(params) {
+      var $table = params.$table,
+          row = params.row,
+          column = params.column;
 
       if (row && column) {
         $table.clearData(row, column.property);
       }
     },
-    CLEAR_ROW: function CLEAR_ROW(_ref2) {
-      var $table = _ref2.$table,
-          row = _ref2.row;
+    CLEAR_ROW: function CLEAR_ROW(params) {
+      var $table = params.$table,
+          row = params.row;
 
       if (row) {
         $table.clearData(row);
       }
     },
-    CLEAR_SELECTED_ROW: function CLEAR_SELECTED_ROW(_ref3) {
-      var $table = _ref3.$table;
-      $table.clearData($table.getSelectRecords());
+    CLEAR_SELECTED_ROW: function CLEAR_SELECTED_ROW(params) {
+      var $table = params.$table;
+      $table.clearData($table.getCheckboxRecords());
     },
-    CLEAR_ALL: function CLEAR_ALL(_ref4) {
-      var $table = _ref4.$table;
+    CLEAR_ALL: function CLEAR_ALL(params) {
+      var $table = params.$table;
       $table.clearData();
     },
-    REVERT_CELL: function REVERT_CELL(_ref5) {
-      var $table = _ref5.$table,
-          row = _ref5.row,
-          column = _ref5.column;
+    REVERT_CELL: function REVERT_CELL(params) {
+      var $table = params.$table,
+          row = params.row,
+          column = params.column;
 
       if (row && column) {
         $table.revertData(row, column.property);
       }
     },
-    REVERT_ROW: function REVERT_ROW(_ref6) {
-      var $table = _ref6.$table,
-          row = _ref6.row;
+    REVERT_ROW: function REVERT_ROW(params) {
+      var $table = params.$table,
+          row = params.row;
 
       if (row) {
         $table.revertData(row);
       }
     },
-    REVERT_SELECTED_ROW: function REVERT_SELECTED_ROW(_ref7) {
-      var $table = _ref7.$table;
-      $table.revertData($table.getSelectRecords());
+    REVERT_SELECTED_ROW: function REVERT_SELECTED_ROW(params) {
+      var $table = params.$table;
+      $table.revertData($table.getCheckboxRecords());
     },
-    REVERT_ALL: function REVERT_ALL(_ref8) {
-      var $table = _ref8.$table;
+    REVERT_ALL: function REVERT_ALL(params) {
+      var $table = params.$table;
       $table.revertData();
     },
-    INSERT_ROW: function INSERT_ROW(_ref9) {
-      var $table = _ref9.$table,
-          menu = _ref9.menu;
+    INSERT_ROW: function INSERT_ROW(params) {
+      var $table = params.$table,
+          menu = params.menu;
       $table.insert(menu.params);
     },
-    INSERT_ACTIVED_ROW: function INSERT_ACTIVED_ROW(_ref10) {
-      var $table = _ref10.$table,
-          menu = _ref10.menu,
-          column = _ref10.column;
+    INSERT_ACTIVED_ROW: function INSERT_ACTIVED_ROW(params) {
+      var $table = params.$table,
+          menu = params.menu,
+          column = params.column;
       var args = menu.params || [];
-      $table.insert(args[0]).then(function (_ref11) {
-        var row = _ref11.row;
+      $table.insert(args[0]).then(function (_ref) {
+        var row = _ref.row;
         return $table.setActiveCell(row, args[1] || column.property);
       });
     },
-    INSERT_AT_ROW: function INSERT_AT_ROW(_ref12) {
-      var $table = _ref12.$table,
-          menu = _ref12.menu,
-          row = _ref12.row;
+    INSERT_AT_ROW: function INSERT_AT_ROW(params) {
+      var $table = params.$table,
+          menu = params.menu,
+          row = params.row;
 
       if (row) {
         $table.insertAt(menu.params, row);
       }
     },
-    INSERT_AT_ACTIVED_ROW: function INSERT_AT_ACTIVED_ROW(_ref13) {
-      var $table = _ref13.$table,
-          menu = _ref13.menu,
-          row = _ref13.row,
-          column = _ref13.column;
+    INSERT_AT_ACTIVED_ROW: function INSERT_AT_ACTIVED_ROW(params) {
+      var $table = params.$table,
+          menu = params.menu,
+          row = params.row,
+          column = params.column;
 
       if (row) {
         var args = menu.params || [];
-        $table.insertAt(args[0], row).then(function (_ref14) {
-          var row = _ref14.row;
+        $table.insertAt(args[0], row).then(function (_ref2) {
+          var row = _ref2.row;
           return $table.setActiveCell(row, args[1] || column.property);
         });
       }
     },
-    DELETE_ROW: function DELETE_ROW(_ref15) {
-      var $table = _ref15.$table,
-          row = _ref15.row;
+    DELETE_ROW: function DELETE_ROW(params) {
+      var $table = params.$table,
+          row = params.row;
 
       if (row) {
         $table.remove(row);
       }
     },
-    DELETE_SELECTED_ROW: function DELETE_SELECTED_ROW(_ref16) {
-      var $table = _ref16.$table;
-
-      if ($table.removeCheckboxRow) {
-        $table.removeCheckboxRow();
-      } else {
-        $table.removeSelecteds();
-      }
+    DELETE_SELECTED_ROW: function DELETE_SELECTED_ROW(params) {
+      var $table = params.$table;
+      $table.removeCheckboxRow();
     },
-    DELETE_ALL: function DELETE_ALL(_ref17) {
-      var $table = _ref17.$table;
+    DELETE_ALL: function DELETE_ALL(params) {
+      var $table = params.$table;
       $table.remove();
     },
-    CLEAR_SORT: function CLEAR_SORT(_ref18) {
-      var $table = _ref18.$table;
+    CLEAR_SORT: function CLEAR_SORT(params) {
+      var $table = params.$table;
       $table.clearSort();
     },
-    SORT_ASC: function SORT_ASC(_ref19, evnt) {
-      var $table = _ref19.$table,
-          column = _ref19.column;
+    SORT_ASC: function SORT_ASC(params) {
+      var $table = params.$table,
+          column = params.column;
 
       if (column) {
-        $table.triggerSortEvent(evnt, column, 'asc');
+        $table.sort(column.property, 'asc');
       }
     },
-    SORT_DESC: function SORT_DESC(_ref20, evnt) {
-      var $table = _ref20.$table,
-          column = _ref20.column;
+    SORT_DESC: function SORT_DESC(params) {
+      var $table = params.$table,
+          column = params.column;
 
       if (column) {
-        $table.triggerSortEvent(evnt, column, 'desc');
+        $table.sort(column.property, 'desc');
       }
     },
-    CLEAR_FILTER: function CLEAR_FILTER(_ref21) {
-      var $table = _ref21.$table,
-          column = _ref21.column;
+    CLEAR_FILTER: function CLEAR_FILTER(params) {
+      var $table = params.$table,
+          column = params.column;
 
       if (column) {
         $table.clearFilter(column.property);
       }
     },
-    CLEAR_ALL_FILTER: function CLEAR_ALL_FILTER(_ref22) {
-      var $table = _ref22.$table;
+    CLEAR_ALL_FILTER: function CLEAR_ALL_FILTER(params) {
+      var $table = params.$table;
       $table.clearFilter();
     },
-    FILTER_CELL: function FILTER_CELL(_ref23) {
-      var $table = _ref23.$table,
-          row = _ref23.row,
-          column = _ref23.column;
+    FILTER_CELL: function FILTER_CELL(params) {
+      var $table = params.$table,
+          row = params.row,
+          column = params.column;
 
       if (row && column) {
-        var property = column.property;
-        $table.filter(property).then(function (options) {
-          if (options.length) {
-            var option = options[0];
-            option.data = _xeUtils["default"].get(row, property);
-            option.checked = true;
-          }
-        }).then(function () {
-          return $table.updateData();
-        });
+        var property = column.property,
+            filters = column.filters;
+
+        if (filters.length) {
+          var option = filters[0];
+          option.data = _xeUtils["default"].get(row, property);
+          option.checked = true;
+          $table.updateData();
+        }
       }
     },
-    EXPORT_ROW: function EXPORT_ROW(_ref24) {
-      var $table = _ref24.$table,
-          menu = _ref24.menu,
-          row = _ref24.row;
+    EXPORT_ROW: function EXPORT_ROW(params) {
+      var $table = params.$table,
+          menu = params.menu,
+          row = params.row;
 
       if (row) {
         var opts = {
@@ -193,51 +187,57 @@
         $table.exportData(_xeUtils["default"].assign(opts, menu.params[0]));
       }
     },
-    EXPORT_SELECTED_ROW: function EXPORT_SELECTED_ROW(_ref25) {
-      var $table = _ref25.$table,
-          menu = _ref25.menu;
+    EXPORT_SELECTED_ROW: function EXPORT_SELECTED_ROW(params) {
+      var $table = params.$table,
+          menu = params.menu;
       var opts = {
-        data: $table.getSelectRecords()
+        data: $table.getCheckboxRecords()
       };
       $table.exportData(_xeUtils["default"].assign(opts, menu.params[0]));
     },
-    EXPORT_ALL: function EXPORT_ALL(_ref26) {
-      var $table = _ref26.$table,
-          menu = _ref26.menu;
+    EXPORT_ALL: function EXPORT_ALL(params) {
+      var $table = params.$table,
+          menu = params.menu;
       $table.exportData(menu.params);
     },
-    PRINT_ALL: function PRINT_ALL(_ref27) {
-      var $table = _ref27.$table,
-          menu = _ref27.menu;
+    PRINT_ALL: function PRINT_ALL(params) {
+      var $table = params.$table,
+          menu = params.menu;
       $table.print(menu.params);
     },
-    PRINT_SELECTED_ROW: function PRINT_SELECTED_ROW(_ref28) {
-      var $table = _ref28.$table,
-          menu = _ref28.menu;
+    PRINT_SELECTED_ROW: function PRINT_SELECTED_ROW(params) {
+      var $table = params.$table,
+          menu = params.menu;
       var opts = {
-        data: $table.getSelectRecords()
+        data: $table.getCheckboxRecords()
       };
       $table.print(_xeUtils["default"].assign(opts, menu.params));
     },
-    HIDDEN_COLUMN: function HIDDEN_COLUMN(_ref29) {
-      var $table = _ref29.$table,
-          column = _ref29.column;
+    HIDDEN_COLUMN: function HIDDEN_COLUMN(params) {
+      var $table = params.$table,
+          column = params.column;
 
       if (column) {
-        $table.hideColumn();
+        $table.hideColumn(column);
       }
     },
-    RESET_COLUMN: function RESET_COLUMN(_ref30) {
-      var $table = _ref30.$table;
-      $table.resetCustoms();
+    RESET_COLUMN: function RESET_COLUMN(params) {
+      var $table = params.$table;
+      $table.resetColumn({
+        visible: true,
+        resizable: false
+      });
     },
-    RESET_RESIZABLE: function RESET_RESIZABLE(_ref31) {
-      var $table = _ref31.$table;
-      $table.resetResizable();
+    RESET_RESIZABLE: function RESET_RESIZABLE(params) {
+      var $table = params.$table;
+      $table.resetColumn({
+        visible: false,
+        resizable: true
+      });
     },
-    RESET_ALL: function RESET_ALL(_ref32) {
-      var $table = _ref32.$table;
-      $table.resetAll();
+    RESET_ALL: function RESET_ALL(params) {
+      var $table = params.$table;
+      $table.resetColumn(true);
     }
   };
 
@@ -276,7 +276,7 @@
       case 'HIDDEN_COLUMN':
         item.disabled = !column;
 
-        if (!item.disabled) {
+        if (column) {
           switch (code) {
             case 'SORT_ASC':
             case 'SORT_DESC':
@@ -324,9 +324,11 @@
 
 
   var VXETablePluginMenus = {
-    install: function install(xtable) {
-      xtable.interceptor.add('event.showMenu', handlePrivilegeEvent);
-      xtable.menus.mixin(menuMap);
+    install: function install(_ref3) {
+      var interceptor = _ref3.interceptor,
+          menus = _ref3.menus;
+      interceptor.add('event.showMenu', handlePrivilegeEvent);
+      menus.mixin(menuMap);
     }
   };
   _exports.VXETablePluginMenus = VXETablePluginMenus;
