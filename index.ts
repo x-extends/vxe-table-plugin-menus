@@ -1,5 +1,13 @@
+/* eslint-disable no-unused-vars */
 import XEUtils from 'xe-utils/methods/xe-utils'
-import { VXETable, MenuLinkParams, InterceptorMenuParams, FirstMenuOption, ChildMenuOption } from 'vxe-table/lib/vxe-table' // eslint-disable-line no-unused-vars
+import {
+  VXETable,
+  MenuLinkParams,
+  InterceptorMenuParams,
+  MenuFirstOption,
+  MenuChildOption
+} from 'vxe-table/lib/vxe-table'
+/* eslint-enable no-unused-vars */
 
 const menuMap = {
   CLEAR_CELL (params: MenuLinkParams) {
@@ -163,7 +171,7 @@ const menuMap = {
   }
 }
 
-function checkPrivilege (item: FirstMenuOption | ChildMenuOption, params: InterceptorMenuParams) {
+function checkPrivilege (item: MenuFirstOption | MenuChildOption, params: InterceptorMenuParams) {
   let { code } = item
   let { columns, column } = params
   switch (code) {

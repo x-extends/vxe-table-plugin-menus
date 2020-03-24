@@ -21,6 +21,9 @@
 
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+  /* eslint-disable no-unused-vars */
+
+  /* eslint-enable no-unused-vars */
   var menuMap = {
     CLEAR_CELL: function CLEAR_CELL(params) {
       var $table = params.$table,
