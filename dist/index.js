@@ -154,7 +154,7 @@
           column = params.column;
 
       if (column) {
-        $table.clearFilter(column.property);
+        $table.clearFilter(column);
       }
     },
     CLEAR_ALL_FILTER: function CLEAR_ALL_FILTER(params) {

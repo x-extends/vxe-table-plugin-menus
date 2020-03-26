@@ -56,7 +56,7 @@ const menuMap = {
   },
   INSERT_ACTIVED_ROW (params: MenuLinkParams) {
     const { $table, menu, column } = params
-    const args = menu.params || []
+    const args: any[] = menu.params || []
     $table.insert(args[0])
       .then(({ row }) => $table.setActiveCell(row, args[1] || column.property))
   },
@@ -69,7 +69,7 @@ const menuMap = {
   INSERT_AT_ACTIVED_ROW (params: MenuLinkParams) {
     const { $table, menu, row, column } = params
     if (row) {
-      const args = menu.params || []
+      const args: any[] = menu.params || []
       $table.insertAt(args[0], row)
         .then(({ row }) => $table.setActiveCell(row, args[1] || column.property))
     }
@@ -107,7 +107,7 @@ const menuMap = {
   CLEAR_FILTER (params: MenuLinkParams) {
     const { $table, column } = params
     if (column) {
-      $table.clearFilter(column.property)
+      $table.clearFilter(column)
     }
   },
   CLEAR_ALL_FILTER (params: MenuLinkParams) {
