@@ -18,6 +18,7 @@ npm install xe-utils vxe-table vxe-table-plugin-menus
 import Vue from 'vue'
 import VXETable from 'vxe-table'
 import VXETablePluginMenus from 'vxe-table-plugin-menus'
+import 'vxe-table/lib/index.css'
 
 Vue.use(VXETable)
 VXETable.use(VXETablePluginMenus)
