@@ -39,7 +39,7 @@ VXETable.use(VXETablePluginMenus)
 | REVERT_ALL  | 还原所有数据的值 | — |
 | INSERT_ROW | 插入数据 | records |
 | INSERT_ACTIVED_ROW | 插入数据并激活编辑状态 | Array\<records, field\> |
-| INSERT_AT_ROW | 插入数据到指定位置并激活编辑状态 | records |
+| INSERT_AT_ROW | 插入数据到指定位置 | records |
 | INSERT_AT_ACTIVED_ROW | 插入数据到指定位置并激活编辑状态 | Array\<records, field\> |
 | DELETE_ROW | 移除行数据 | — |
 | DELETE_SELECTED_ROW  | 移除选中行数据 | — |
@@ -49,15 +49,16 @@ VXETable.use(VXETablePluginMenus)
 | SORT_DESC | 按所选列的值倒序 | — |
 | CLEAR_FILTER | 清除选中列的筛选条件 | — |
 | CLEAR_ALL_FILTER | 清除所有列筛选条件 | — |
+| FILTER_CELL | 根据单元格值筛选 | — |
 | EXPORT_ROW | 导出行数据 | options |
 | EXPORT_SELECTED_ROW | 导出选中行数据 | options |
 | EXPORT_ALL  | 导出所有行数据 | options |
 | PRINT_ALL | 打印所有行数据 | options |
 | PRINT_SELECTED_ROW | 打印选中行 | options |
-| HIDDEN_COLUMN | 隐藏列 | — |
-| RESET_COLUMN | 重置列可视状态 | — |
+| HIDDEN_COLUMN | 隐藏当前列 | — |
+| RESET_COLUMN | 重置列的可视状态 | — |
 | RESET_RESIZABLE | 重置列宽状态 | — |
-| RESET_ALL | 重置所有个性化数据 | — |
+| RESET_ALL | 重置列的所有状态 | — |
 
 ## demo
 

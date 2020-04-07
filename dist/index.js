@@ -25,6 +25,9 @@
 
   /* eslint-enable no-unused-vars */
   var menuMap = {
+    /**
+     * 清除单元格数据的值
+     */
     CLEAR_CELL: function CLEAR_CELL(params) {
       var $table = params.$table,
           row = params.row,
@@ -34,6 +37,10 @@
         $table.clearData(row, column.property);
       }
     },
+
+    /**
+     * 清除行数据的值
+     */
     CLEAR_ROW: function CLEAR_ROW(params) {
       var $table = params.$table,
           row = params.row;
@@ -42,14 +49,26 @@
         $table.clearData(row);
       }
     },
+
+    /**
+     * 清除选中行数据的值
+     */
     CLEAR_SELECTED_ROW: function CLEAR_SELECTED_ROW(params) {
       var $table = params.$table;
       $table.clearData($table.getCheckboxRecords());
     },
+
+    /**
+     * 清除所有数据的值
+     */
     CLEAR_ALL: function CLEAR_ALL(params) {
       var $table = params.$table;
       $table.clearData();
     },
+
+    /**
+     * 还原单元格数据的值
+     */
     REVERT_CELL: function REVERT_CELL(params) {
       var $table = params.$table,
           row = params.row,
@@ -59,6 +78,10 @@
         $table.revertData(row, column.property);
       }
     },
+
+    /**
+     * 还原行数据的值
+     */
     REVERT_ROW: function REVERT_ROW(params) {
       var $table = params.$table,
           row = params.row;
@@ -67,19 +90,35 @@
         $table.revertData(row);
       }
     },
+
+    /**
+     * 还原选中行数据的值
+     */
     REVERT_SELECTED_ROW: function REVERT_SELECTED_ROW(params) {
       var $table = params.$table;
       $table.revertData($table.getCheckboxRecords());
     },
+
+    /**
+     * 还原所有数据的值
+     */
     REVERT_ALL: function REVERT_ALL(params) {
       var $table = params.$table;
       $table.revertData();
     },
+
+    /**
+     * 插入数据
+     */
     INSERT_ROW: function INSERT_ROW(params) {
       var $table = params.$table,
           menu = params.menu;
       $table.insert(menu.params);
     },
+
+    /**
+     * 插入数据并激活编辑状态
+     */
     INSERT_ACTIVED_ROW: function INSERT_ACTIVED_ROW(params) {
       var $table = params.$table,
           menu = params.menu,
@@ -90,6 +129,10 @@
         return $table.setActiveCell(row, args[1] || column.property);
       });
     },
+
+    /**
+     * 插入数据到指定位置
+     */
     INSERT_AT_ROW: function INSERT_AT_ROW(params) {
       var $table = params.$table,
           menu = params.menu,
@@ -99,6 +142,10 @@
         $table.insertAt(menu.params, row);
       }
     },
+
+    /**
+     * 插入数据到指定位置并激活编辑状态
+     */
     INSERT_AT_ACTIVED_ROW: function INSERT_AT_ACTIVED_ROW(params) {
       var $table = params.$table,
           menu = params.menu,
@@ -113,6 +160,10 @@
         });
       }
     },
+
+    /**
+     * 移除行数据
+     */
     DELETE_ROW: function DELETE_ROW(params) {
       var $table = params.$table,
           row = params.row;
@@ -121,18 +172,34 @@
         $table.remove(row);
       }
     },
+
+    /**
+     * 移除选中行数据
+     */
     DELETE_SELECTED_ROW: function DELETE_SELECTED_ROW(params) {
       var $table = params.$table;
       $table.removeCheckboxRow();
     },
+
+    /**
+     * 移除所有行数据
+     */
     DELETE_ALL: function DELETE_ALL(params) {
       var $table = params.$table;
       $table.remove();
     },
+
+    /**
+     * 清除排序条件
+     */
     CLEAR_SORT: function CLEAR_SORT(params) {
       var $table = params.$table;
       $table.clearSort();
     },
+
+    /**
+     * 按所选列的值升序
+     */
     SORT_ASC: function SORT_ASC(params) {
       var $table = params.$table,
           column = params.column;
@@ -141,6 +208,10 @@
         $table.sort(column.property, 'asc');
       }
     },
+
+    /**
+     * 按所选列的值倒序
+     */
     SORT_DESC: function SORT_DESC(params) {
       var $table = params.$table,
           column = params.column;
@@ -149,6 +220,10 @@
         $table.sort(column.property, 'desc');
       }
     },
+
+    /**
+     * 清除选中列的筛选条件
+     */
     CLEAR_FILTER: function CLEAR_FILTER(params) {
       var $table = params.$table,
           column = params.column;
@@ -157,10 +232,18 @@
         $table.clearFilter(column);
       }
     },
+
+    /**
+     * 清除所有列筛选条件
+     */
     CLEAR_ALL_FILTER: function CLEAR_ALL_FILTER(params) {
       var $table = params.$table;
       $table.clearFilter();
     },
+
+    /**
+     * 根据单元格值筛选
+     */
     FILTER_CELL: function FILTER_CELL(params) {
       var $table = params.$table,
           row = params.row,
@@ -178,6 +261,10 @@
         }
       }
     },
+
+    /**
+     * 导出行数据
+     */
     EXPORT_ROW: function EXPORT_ROW(params) {
       var $table = params.$table,
           menu = params.menu,
@@ -190,6 +277,10 @@
         $table.exportData(_xeUtils["default"].assign(opts, menu.params[0]));
       }
     },
+
+    /**
+     * 导出选中行数据
+     */
     EXPORT_SELECTED_ROW: function EXPORT_SELECTED_ROW(params) {
       var $table = params.$table,
           menu = params.menu;
@@ -198,16 +289,28 @@
       };
       $table.exportData(_xeUtils["default"].assign(opts, menu.params[0]));
     },
+
+    /**
+     * 导出所有行数据
+     */
     EXPORT_ALL: function EXPORT_ALL(params) {
       var $table = params.$table,
           menu = params.menu;
       $table.exportData(menu.params);
     },
+
+    /**
+     * 打印所有行数据
+     */
     PRINT_ALL: function PRINT_ALL(params) {
       var $table = params.$table,
           menu = params.menu;
       $table.print(menu.params);
     },
+
+    /**
+     * 打印选中行
+     */
     PRINT_SELECTED_ROW: function PRINT_SELECTED_ROW(params) {
       var $table = params.$table,
           menu = params.menu;
@@ -216,6 +319,10 @@
       };
       $table.print(_xeUtils["default"].assign(opts, menu.params));
     },
+
+    /**
+     * 隐藏当前列
+     */
     HIDDEN_COLUMN: function HIDDEN_COLUMN(params) {
       var $table = params.$table,
           column = params.column;
@@ -224,6 +331,10 @@
         $table.hideColumn(column);
       }
     },
+
+    /**
+     * 重置列的可视状态
+     */
     RESET_COLUMN: function RESET_COLUMN(params) {
       var $table = params.$table;
       $table.resetColumn({
@@ -231,6 +342,10 @@
         resizable: false
       });
     },
+
+    /**
+     * 重置列宽状态
+     */
     RESET_RESIZABLE: function RESET_RESIZABLE(params) {
       var $table = params.$table;
       $table.resetColumn({
@@ -238,6 +353,10 @@
         resizable: true
       });
     },
+
+    /**
+     * 重置列的所有状态
+     */
     RESET_ALL: function RESET_ALL(params) {
       var $table = params.$table;
       $table.resetColumn(true);
