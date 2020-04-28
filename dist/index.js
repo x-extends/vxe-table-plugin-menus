@@ -24,6 +24,19 @@
   /* eslint-disable no-unused-vars */
 
   /* eslint-enable no-unused-vars */
+  function handleFixedColumn(fixed) {
+    return function (params) {
+      var $table = params.$table,
+          column = params.column;
+
+      _xeUtils["default"].eachTree([column], function (column) {
+        column.fixed = fixed;
+      });
+
+      $table.refreshColumn();
+    };
+  }
+
   var menuMap = {
     /**
      * 清除单元格数据的值
@@ -333,6 +346,21 @@
     },
 
     /**
+     * 将列固定到左侧
+     */
+    FIXED_LEFT_COLUMN: handleFixedColumn('left'),
+
+    /**
+     * 将列固定到右侧
+     */
+    FIXED_RIGHT_COLUMN: handleFixedColumn('right'),
+
+    /**
+     * 清除固定列
+     */
+    CLEAR_FIXED_COLUMN: handleFixedColumn(''),
+
+    /**
      * 重置列的可视状态
      */
     RESET_COLUMN: function RESET_COLUMN(params) {
@@ -396,9 +424,14 @@
       case 'FILTER_CELL':
       case 'EXPORT_ROW':
       case 'HIDDEN_COLUMN':
+      case 'FIXED_LEFT_COLUMN':
+      case 'FIXED_RIGHT_COLUMN':
+      case 'CLEAR_FIXED_COLUMN':
         item.disabled = !column;
 
         if (column) {
+          var isChildCol = !!column.parentId;
+
           switch (code) {
             case 'SORT_ASC':
             case 'SORT_DESC':
@@ -419,6 +452,18 @@
                 }
               }
 
+              break;
+
+            case 'FIXED_LEFT_COLUMN':
+              item.disabled = isChildCol || column.fixed === 'left';
+              break;
+
+            case 'FIXED_RIGHT_COLUMN':
+              item.disabled = isChildCol || column.fixed === 'right';
+              break;
+
+            case 'CLEAR_FIXED_COLUMN':
+              item.disabled = isChildCol || !column.fixed;
               break;
           }
         }

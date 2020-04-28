@@ -1,6 +1,6 @@
 {
   "name": "vxe-table-plugin-menus",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "基于 vxe-table 表格的增强插件，提供实用的快捷菜单集",
   "scripts": {
     "lib": "gulp build"

@@ -54,6 +54,9 @@ VXETable.use(VXETablePluginMenus)
 | EXPORT_ALL  | 导出所有行数据 | options |
 | PRINT_ALL | 打印所有行数据 | options |
 | PRINT_SELECTED_ROW | 打印选中行 | options |
+| FIXED_LEFT_COLUMN | 将列固定到左侧 | — |
+| FIXED_RIGHT_COLUMN | 将列固定到右侧 | — |
+| CLEAR_FIXED_COLUMN | 清除固定列 | — |
 | HIDDEN_COLUMN | 隐藏当前列 | — |
 | RESET_COLUMN | 重置列的可视状态 | — |
 | RESET_RESIZABLE | 重置列宽状态 | — |
