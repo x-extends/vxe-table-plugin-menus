@@ -1,6 +1,6 @@
 {
   "name": "vxe-table-plugin-menus",
-  "version": "1.3.4",
+  "version": "1.4.0",
   "description": "基于 vxe-table 表格的增强插件，提供实用的快捷菜单集",
   "scripts": {
     "lib": "gulp build"
@@ -57,7 +57,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xuliangzhan/vxe-table-plugin-menus.git"
+    "url": "git+https://github.com/x-extends/vxe-table-plugin-menus.git"
   },
   "keywords": [
     "vxe-table-plugin-menus"
@@ -68,7 +68,7 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/xuliangzhan/vxe-table-plugin-menus/issues"
+    "url": "https://github.com/x-extends/vxe-table-plugin-menus/issues"
   },
-  "homepage": "https://github.com/xuliangzhan/vxe-table-plugin-menus#readme"
+  "homepage": "https://github.com/x-extends/vxe-table-plugin-menus#readme"
 }
