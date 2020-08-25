@@ -28,20 +28,20 @@ VXETable.use(VXETablePluginMenus)
 
 | code 编码 | describe 描述 | params 参数 |
 |------|------|------|
-| CLEAR_CELL | 清除单元格数据的值 | — |
+| CLEAR_CELL | 清除单元格数据的值；如果启用 mouse-config.area 功能，则清除区域范围内的单元格数据 | — |
 | CLEAR_ROW  | 清除行数据的值 | — |
-| CLEAR_SELECTED_ROW  | 清除选中行数据的值 | — |
+| CLEAR_CHECKBOX_ROW  | 清除复选框选中行数据的值 | — |
 | CLEAR_ALL  | 清除所有数据的值 | — |
-| REVERT_CELL  | 还原单元格数据的值 | — |
+| REVERT_CELL  | 还原单元格数据的值；如果启用 mouse-config.area 功能，则还原区域范围内的单元格数据 | — |
 | REVERT_ROW  | 还原行数据的值 | — |
-| REVERT_SELECTED_ROW  | 还原选中行数据的值 | — |
+| REVERT_CHECKBOX_ROW  | 还原复选框选中行数据的值 | — |
 | REVERT_ALL  | 还原所有数据的值 | — |
 | INSERT_ROW | 插入数据 | records |
 | INSERT_ACTIVED_ROW | 插入数据并激活编辑状态 | Array\<records, field\> |
 | INSERT_AT_ROW | 插入数据到指定位置 | records |
 | INSERT_AT_ACTIVED_ROW | 插入数据到指定位置并激活编辑状态 | Array\<records, field\> |
 | DELETE_ROW | 移除行数据 | — |
-| DELETE_SELECTED_ROW  | 移除选中行数据 | — |
+| DELETE_CHECKBOX_ROW  | 移除复选框选中行数据 | — |
 | DELETE_ALL | 移除所有行数据 | — |
 | CLEAR_SORT | 清除排序条件 | — |
 | SORT_ASC | 按所选列的值升序 | — |
@@ -50,10 +50,10 @@ VXETable.use(VXETablePluginMenus)
 | CLEAR_ALL_FILTER | 清除所有列筛选条件 | — |
 | FILTER_CELL | 根据单元格值筛选 | — |
 | EXPORT_ROW | 导出行数据 | options |
-| EXPORT_SELECTED_ROW | 导出选中行数据 | options |
+| EXPORT_CHECKBOX_ROW | 导出复选框选中行数据 | options |
 | EXPORT_ALL  | 导出所有行数据 | options |
 | PRINT_ALL | 打印所有行数据 | options |
-| PRINT_SELECTED_ROW | 打印选中行 | options |
+| PRINT_CHECKBOX_ROW | 打印复选框选中行 | options |
 | FIXED_LEFT_COLUMN | 将列固定到左侧 | — |
 | FIXED_RIGHT_COLUMN | 将列固定到右侧 | — |
 | CLEAR_FIXED_COLUMN | 清除固定列 | — |

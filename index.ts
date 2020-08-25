@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import XEUtils from 'xe-utils/methods/xe-utils'
+import XEUtils from 'xe-utils/ctor'
 import {
   VXETable,
   MenuLinkParams,
@@ -19,14 +19,32 @@ function handleFixedColumn (fixed: string) {
   }
 }
 
+function abandoned (code: string, newCode: string) {
+  console.warn(`The code "${code}" has been scrapped, please use "${newCode}"`)
+}
+
 const menuMap = {
   /**
-   * 清除单元格数据的值
+   * 清除单元格数据的值；如果启用 mouse-config.area 功能，则清除区域范围内的单元格数据
    */
   CLEAR_CELL (params: MenuLinkParams) {
     const { $table, row, column } = params
     if (row && column) {
-      $table.clearData(row, column.property)
+      if ($table.mouseConfig && $table.mouseOpts.area) {
+        const cellAreas = $table.getCellAreas()
+        if (cellAreas && cellAreas.length) {
+          cellAreas.forEach(areaItem => {
+            const { rows, cols } = areaItem
+            cols.forEach(column => {
+              rows.forEach(row => {
+                $table.clearData(row, column.property)
+              })
+            })
+          })
+        }
+      } else {
+        $table.clearData(row, column.property)
+      }
     }
   },
   /**
@@ -38,10 +56,15 @@ const menuMap = {
       $table.clearData(row)
     }
   },
-  /**
-   * 清除选中行数据的值
-   */
+  // 已废弃
   CLEAR_SELECTED_ROW (params: MenuLinkParams) {
+    abandoned('CLEAR_SELECTED_ROW', 'CLEAR_CHECKBOX_ROW')
+    return menuMap.CLEAR_CHECKBOX_ROW(params)
+  },
+  /**
+   * 清除复选框选中行数据的值
+   */
+  CLEAR_CHECKBOX_ROW (params: MenuLinkParams) {
     const { $table } = params
     $table.clearData($table.getCheckboxRecords())
   },
@@ -53,12 +76,26 @@ const menuMap = {
     $table.clearData()
   },
   /**
-   * 还原单元格数据的值
+   * 还原单元格数据的值；如果启用 mouse-config.area 功能，则还原区域范围内的单元格数据
    */
   REVERT_CELL (params: MenuLinkParams) {
     const { $table, row, column } = params
     if (row && column) {
-      $table.revertData(row, column.property)
+      if ($table.mouseConfig && $table.mouseOpts.area) {
+        const cellAreas = $table.getCellAreas()
+        if (cellAreas && cellAreas.length) {
+          cellAreas.forEach(areaItem => {
+            const { rows, cols } = areaItem
+            cols.forEach(column => {
+              rows.forEach(row => {
+                $table.revertData(row, column.property)
+              })
+            })
+          })
+        }
+      } else {
+        $table.revertData(row, column.property)
+      }
     }
   },
   /**
@@ -70,10 +107,15 @@ const menuMap = {
       $table.revertData(row)
     }
   },
-  /**
-   * 还原选中行数据的值
-   */
+  // 已废弃
   REVERT_SELECTED_ROW (params: MenuLinkParams) {
+    abandoned('REVERT_SELECTED_ROW', 'REVERT_CHECKBOX_ROW')
+    return menuMap.REVERT_CHECKBOX_ROW(params)
+  },
+  /**
+   * 还原复选框选中行数据的值
+   */
+  REVERT_CHECKBOX_ROW (params: MenuLinkParams) {
     const { $table } = params
     $table.revertData($table.getCheckboxRecords())
   },
@@ -129,10 +171,15 @@ const menuMap = {
       $table.remove(row)
     }
   },
-  /**
-   * 移除选中行数据
-   */
+  // 已废弃
   DELETE_SELECTED_ROW (params: MenuLinkParams) {
+    abandoned('DELETE_SELECTED_ROW', 'DELETE_CHECKBOX_ROW')
+    return menuMap.DELETE_CHECKBOX_ROW(params)
+  },
+  /**
+   * 移除复选框选中行数据
+   */
+  DELETE_CHECKBOX_ROW (params: MenuLinkParams) {
     const { $table } = params
     $table.removeCheckboxRow()
   },
@@ -169,7 +216,7 @@ const menuMap = {
     }
   },
   /**
-   * 清除选中列的筛选条件
+   * 清除复选框选中列的筛选条件
    */
   CLEAR_FILTER (params: MenuLinkParams) {
     const { $table, column } = params
@@ -209,10 +256,15 @@ const menuMap = {
       $table.exportData(XEUtils.assign(opts, menu.params[0]))
     }
   },
-  /**
-   * 导出选中行数据
-   */
+  // 已废弃
   EXPORT_SELECTED_ROW (params: MenuLinkParams) {
+    abandoned('EXPORT_SELECTED_ROW', 'EXPORT_CHECKBOX_ROW')
+    return menuMap.EXPORT_CHECKBOX_ROW(params)
+  },
+  /**
+   * 导出复选框选中行数据
+   */
+  EXPORT_CHECKBOX_ROW (params: MenuLinkParams) {
     const { $table, menu } = params
     let opts = { data: $table.getCheckboxRecords() }
     $table.exportData(XEUtils.assign(opts, menu.params[0]))
@@ -231,10 +283,15 @@ const menuMap = {
     const { $table, menu } = params
     $table.print(menu.params)
   },
-  /**
-   * 打印选中行
-   */
+  // 已废弃
   PRINT_SELECTED_ROW (params: MenuLinkParams) {
+    abandoned('PRINT_SELECTED_ROW', 'PRINT_CHECKBOX_ROW')
+    return menuMap.PRINT_CHECKBOX_ROW(params)
+  },
+  /**
+   * 打印复选框选中行
+   */
+  PRINT_CHECKBOX_ROW (params: MenuLinkParams) {
     const { $table, menu } = params
     let opts = { data: $table.getCheckboxRecords() }
     $table.print(XEUtils.assign(opts, menu.params))
