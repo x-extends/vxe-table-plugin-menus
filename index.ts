@@ -25,23 +25,22 @@ function handleFixedColumn(fixed: string) {
 function handleCopyOrCut(params: MenuLinkParams, isCut?: boolean) {
   const { $table, row, column } = params
   if (row && column) {
-    let content = ''
+    let text = ''
     if ($table.mouseConfig && $table.mouseOpts.area) {
-      content = isCut ? $table.cutCellArea() : $table.copyCellArea()
+      if (isCut) {
+        $table.cutCellArea()
+      } else {
+        $table.copyCellArea()
+      }
     } else {
-      content = XEUtils.toString(XEUtils.get(row, column.property))
-    }
-    const { $vxe } = $table
-    const { clipboard } = $vxe
-    // 操作内置剪贴板
-    if (!clipboard) {
-      $vxe.clipboard = { text: content }
-    } else {
-      clipboard.text = content
+      const { $vxe } = $table
+      text = XEUtils.toString(XEUtils.get(row, column.property))
+      // 操作内置剪贴板
+      $vxe.clipboard = { text }
     }
     // 开始复制操作
     if (XEUtils.isFunction(handleCopy)) {
-      handleCopy(content)
+      handleCopy(text)
     } else {
       console.warn('Copy function does not exist, copy to clipboard failed.')
     }
@@ -467,11 +466,6 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
       item.disabled = !columns.some((column) => column.filters && column.filters.some((option) => option.checked))
       break
     }
-    case 'MERGE_CELL': {
-      const cellAreas = $table.mouseConfig && $table.mouseOpts.area ? $table.getCellAreas() : []
-      item.disabled = !cellAreas.length || (cellAreas.length === 1 && cellAreas[0].rows.length === 1 && cellAreas[0].cols.length === 1)
-      break
-    }
     case 'CLEAR_ALL_MERGE': {
       const mergeCells = $table.getMergeCells()
       const mergeFooterItems = $table.getMergeFooterItems()
@@ -485,6 +479,10 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
     }
     case 'CLEAR_CELL':
     case 'CLEAR_ROW':
+    case 'COPY_CELL':
+    case 'CUT_CELL':
+    case 'PASTE_CELL':
+    case 'MERGE_CELL':
     case 'REVERT_CELL':
     case 'REVERT_ROW':
     case 'INSERT_AT_ROW':
@@ -518,6 +516,11 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
               }
             }
             break
+          case 'MERGE_CELL': {
+            const cellAreas = $table.mouseConfig && $table.mouseOpts.area ? $table.getCellAreas() : []
+            item.disabled = !cellAreas.length || (cellAreas.length === 1 && cellAreas[0].rows.length === 1 && cellAreas[0].cols.length === 1)
+            break
+          }
           case 'FIXED_LEFT_COLUMN':
             item.disabled = isChildCol || column.fixed === 'left'
             break
@@ -527,6 +530,12 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
           case 'CLEAR_FIXED_COLUMN':
             item.disabled = isChildCol || !column.fixed
             break
+          case 'PASTE_CELL': {
+            const { $vxe } = $table
+            const { clipboard } = $vxe
+            item.disabled = !clipboard || !clipboard.text
+            break
+          }
         }
       }
       break
