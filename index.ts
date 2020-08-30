@@ -415,14 +415,14 @@ const menuMap = {
    */
   OPEN_FIND(params: MenuLinkParams) {
     const { $table } = params
-    $table.openFindAndReplace()
+    $table.openFind()
   },
   /**
    * 打开替换功能
    */
   OPEN_REPLACE(params: MenuLinkParams) {
     const { $table } = params
-    $table.openFindAndReplace('replace')
+    $table.openReplace()
   },
   /**
    * 隐藏当前列

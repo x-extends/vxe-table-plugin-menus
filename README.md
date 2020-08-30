@@ -69,8 +69,8 @@ VXETable.use(VXETablePluginMenus, {
 | EXPORT_ALL  | 导出所有行数据 | options |
 | PRINT_ALL | 打印所有行数据 | options |
 | PRINT_CHECKBOX_ROW | 打印复选框选中行 | options |
-| OPEN_FIND | 如果启用 mouse-config.area 功能，打开查找功能 | — |
-| OPEN_REPLACE | 如果启用 mouse-config.area 功能，打开替换功能 | — |
+| OPEN_FIND | 如果启用 mouse-config.area 功能，打开单元格查找功能 | — |
+| OPEN_REPLACE | 如果启用 mouse-config.area 功能，打开单元格替换功能 | — |
 | FIXED_LEFT_COLUMN | 将列固定到左侧 | — |
 | FIXED_RIGHT_COLUMN | 将列固定到右侧 | — |
 | CLEAR_FIXED_COLUMN | 清除固定列 | — |
