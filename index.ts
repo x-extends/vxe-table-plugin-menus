@@ -6,6 +6,7 @@ import {
   InterceptorMenuParams,
   MenuFirstOption,
   MenuChildOption,
+  MouseCellArea,
   Table
 } from 'vxe-table/lib/vxe-table'
 /* eslint-enable no-unused-vars */
@@ -45,6 +46,31 @@ function handleCopyOrCut(params: MenuLinkParams, isCut?: boolean) {
       console.warn('Copy function does not exist, copy to clipboard failed.')
     }
   }
+}
+
+function checkCellOverlay(params: { $table: Table, [key: string]: any }, cellAreas: MouseCellArea[]) {
+  const { $table } = params
+  const { visibleData } = $table.getTableData()
+  const { visibleColumn } = $table.getTableColumn()
+  const indexMaps: { [key: string]: boolean } = {}
+  for (let aIndex = 0, areaSize = cellAreas.length; aIndex < areaSize; aIndex++) {
+    const areaItem = cellAreas[aIndex]
+    const { rows, cols } = areaItem
+    for (let rIndex = 0, rowSize = rows.length; rIndex < rowSize; rIndex++) {
+      const offsetRow = rows[rIndex]
+      const orIndex = visibleData.indexOf(offsetRow)
+      for (let cIndex = 0, colSize = cols.length; cIndex < colSize; cIndex++) {
+        const offsetColumn = cols[cIndex]
+        const ocIndex = visibleColumn.indexOf(offsetColumn)
+        const key = orIndex + ':' + ocIndex
+        if (indexMaps[key]) {
+          return false
+        }
+        indexMaps[key] = true
+      }
+    }
+  }
+  return true
 }
 
 function getBeenMerges(params: { $table: Table, [key: string]: any }) {
@@ -537,9 +563,16 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
             item.disabled = !($table.mouseConfig && $table.mouseOpts.area)
             break
           }
+          case 'COPY_CELL':
+          case 'CUT_CELL':
+          case 'PASTE_CELL': {
+            const cellAreas = $table.mouseConfig && $table.mouseOpts.area ? $table.getCellAreas() : []
+            item.disabled = cellAreas.length > 1
+            break
+          }
           case 'MERGE_CELL': {
             const cellAreas = $table.mouseConfig && $table.mouseOpts.area ? $table.getCellAreas() : []
-            item.disabled = !cellAreas.length || (cellAreas.length === 1 && cellAreas[0].rows.length === 1 && cellAreas[0].cols.length === 1)
+            item.disabled = !cellAreas.length || (cellAreas.length === 1 && cellAreas[0].rows.length === 1 && cellAreas[0].cols.length === 1) || !checkCellOverlay(params, cellAreas)
             break
           }
           case 'FIXED_LEFT_COLUMN':
