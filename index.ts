@@ -411,6 +411,20 @@ const menuMap = {
     $table.print(XEUtils.assign(opts, menu.params))
   },
   /**
+   * 打开查找功能
+   */
+  OPEN_FIND(params: MenuLinkParams) {
+    const { $table } = params
+    $table.openFindAndReplace()
+  },
+  /**
+   * 打开替换功能
+   */
+  OPEN_REPLACE(params: MenuLinkParams) {
+    const { $table } = params
+    $table.openFindAndReplace('replace')
+  },
+  /**
    * 隐藏当前列
    */
   HIDDEN_COLUMN(params: MenuLinkParams) {
@@ -493,6 +507,8 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
     case 'CLEAR_FILTER':
     case 'FILTER_CELL':
     case 'EXPORT_ROW':
+    case 'OPEN_FIND':
+    case 'OPEN_REPLACE':
     case 'HIDDEN_COLUMN':
     case 'FIXED_LEFT_COLUMN':
     case 'FIXED_RIGHT_COLUMN':
@@ -516,6 +532,11 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
               }
             }
             break
+          case 'OPEN_FIND':
+          case 'OPEN_REPLACE': {
+            item.disabled = !($table.mouseConfig && $table.mouseOpts.area)
+            break
+          }
           case 'MERGE_CELL': {
             const cellAreas = $table.mouseConfig && $table.mouseOpts.area ? $table.getCellAreas() : []
             item.disabled = !cellAreas.length || (cellAreas.length === 1 && cellAreas[0].rows.length === 1 && cellAreas[0].cols.length === 1)
