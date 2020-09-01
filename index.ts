@@ -232,7 +232,29 @@ const menuMap = {
     }
   },
   /**
-   * 如果启用 mouse-config.area 功能，临时合并区域范围内的单元格
+   * 如果启用 mouse-config.area 功能，如果所选区域内已存在合并单元格，则取消临时合并，否则临时合并
+   */
+  MERGE_OR_CLEAR(params: MenuLinkParams) {
+    const { $table } = params
+    const cellAreas = $table.getCellAreas()
+    const beenMerges = getBeenMerges(params)
+    if (beenMerges.length) {
+      $table.removeMergeCells(beenMerges)
+    } else {
+      $table.setMergeCells(
+        cellAreas.map(({ rows, cols }) => {
+          return {
+            row: rows[0],
+            col: cols[0],
+            rowspan: rows.length,
+            colspan: cols.length
+          }
+        })
+      )
+    }
+  },
+  /**
+   * 如果启用 mouse-config.area 功能，临时合并区域范围内的单元格，不管是否存在已合并
    */
   MERGE_CELL(params: MenuLinkParams) {
     const { $table } = params
@@ -519,6 +541,7 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
     case 'COPY_CELL':
     case 'CUT_CELL':
     case 'PASTE_CELL':
+    case 'MERGE_OR_CLEAR':
     case 'MERGE_CELL':
     case 'REVERT_CELL':
     case 'REVERT_ROW':
@@ -567,6 +590,7 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
             item.disabled = cellAreas.length > 1
             break
           }
+          case 'MERGE_OR_CLEAR':
           case 'MERGE_CELL': {
             const cellAreas = $table.mouseConfig && $table.mouseOpts.area ? $table.getCellAreas() : []
             item.disabled = !cellAreas.length || (cellAreas.length === 1 && cellAreas[0].rows.length === 1 && cellAreas[0].cols.length === 1) || !checkCellOverlay(params, cellAreas)
