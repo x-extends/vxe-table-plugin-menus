@@ -28,11 +28,8 @@ function handleCopyOrCut(params: MenuLinkParams, isCut?: boolean) {
   if (row && column) {
     let text = ''
     if ($table.mouseConfig && $table.mouseOpts.area) {
-      if (isCut) {
-        $table.cutCellArea()
-      } else {
-        $table.copyCellArea()
-      }
+      const clipRest = isCut ? $table.cutCellArea() : $table.copyCellArea()
+      text = clipRest.text
     } else {
       const { $vxe } = $table
       text = XEUtils.toString(XEUtils.get(row, column.property))
@@ -610,16 +607,26 @@ function handlePrivilegeEvent(params: InterceptorMenuParams) {
   })
 }
 
+interface VXETablePluginMenusOptions {
+  copy?: typeof handleCopy;
+}
+
+function setup (options?: VXETablePluginMenusOptions) {
+  if (options && options.copy) {
+    handleCopy = options.copy
+  }
+}
+
 /**
  * 基于 vxe-table 表格的增强插件，提供实用的快捷菜单集
  */
 export const VXETablePluginMenus = {
-  install({ interceptor, menus }: typeof VXETable, options?: { copy?: typeof handleCopy }) {
-    if (options && options.copy) {
-      handleCopy = options.copy
-    } else if (window.XEClipboard) {
+  setup,
+  install({ interceptor, menus }: typeof VXETable, options?: VXETablePluginMenusOptions) {
+    if (window.XEClipboard) {
       handleCopy = window.XEClipboard.copy
     }
+    setup(options)
     interceptor.add('event.showMenu', handlePrivilegeEvent)
     menus.mixin(menuMap)
   }
