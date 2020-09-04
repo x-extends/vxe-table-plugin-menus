@@ -258,8 +258,18 @@ const menuMap = {
    */
   MERGE_CELL(params: MenuLinkParams) {
     const { $table } = params
+    const { $vxe } = $table
+    const { modal } = $vxe
+    const { visibleData } = $table.getTableData()
+    const { visibleColumn } = $table.getTableColumn()
     const cellAreas = $table.getCellAreas()
     handleClearMergeCells(params)
+    if (cellAreas.some(({ rows, cols }) => rows.length === visibleData.length || cols.length === visibleColumn.length)) {
+      if (modal) {
+        modal.message({ message: $vxe.t('vxe.pro.area.mergeErr'), status: 'error', id: 'operErr' })
+      }
+      return
+    }
     $table.setMergeCells(
       cellAreas.map(({ rows, cols }) => {
         return {

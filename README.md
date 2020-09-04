@@ -26,6 +26,10 @@ VXETable.use(VXETablePluginMenus)
 import XEClipboard from 'xe-clipboard'
 
 VXETable.use(VXETablePluginMenus, {
+  // 自定义处理函数，该示例使用 xe-clipboard 演示
+  // copy (text) {
+  //   // ...
+  // }
   copy: XEClipboard.copy
 })
 */
