@@ -3,7 +3,6 @@ import XEUtils from 'xe-utils/ctor'
 import {
   VXETableByVueProperty,
   VXETableInstance,
-  VxeTableConstructor,
   VxeColumnPropTypes,
   VxeTableDefines,
   VxeTableProDefines,
