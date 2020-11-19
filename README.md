@@ -53,7 +53,7 @@ VXETable.use(VXETablePluginMenus, {
 | CLEAR_MERGE_CELL | 如果启用 mouse-config.area 功能，清除区域范围内单元格的临时合并状态 | — |
 | CLEAR_ALL_MERGE | 清除所有单元格及表尾的临时合并状态 | — |
 | COPY_CELL | 复制单元格数据的值；如果启用 mouse-config.area 功能，则复制区域范围内的单元格数据，支持 Excel 和 WPS | — |
-| CUT_CELL | 剪贴单元格数据的值；如果启用 mouse-config.area 功能，则剪贴区域范围内的单元格数据，支持 Excel 和 WPS | — |
+| CUT_CELL | （仅支持在单表区域内操作）剪贴单元格数据的值；如果启用 mouse-config.area 功能，则剪贴区域范围内的单元格数据，支持 Excel 和 WPS | — |
 | PASTE_CELL | 粘贴从表格中被复制的数据；如果启用 mouse-config.area 功能，则粘贴区域范围内的单元格数据，不支持读取剪贴板 | — |
 | INSERT_ROW | 插入数据 | records |
 | INSERT_ACTIVED_ROW | 插入数据并激活编辑状态 | Array\<records, field\> |

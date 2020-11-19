@@ -598,6 +598,15 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
           case 'PASTE_CELL': {
             const cellAreas = $table.mouseConfig && $table.mouseOpts.area ? $table.getCellAreas() : []
             item.disabled = cellAreas.length > 1
+            if (!item.disabled) {
+              switch (code) {
+                case 'PASTE_CELL': 
+                  const { $vxe } = $table
+                  const { clipboard } = $vxe
+                  item.disabled = !clipboard || !clipboard.text
+                  break
+              }
+            }
             break
           }
           case 'MERGE_OR_CLEAR':
@@ -615,12 +624,6 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
           case 'CLEAR_FIXED_COLUMN':
             item.disabled = isChildCol || !column.fixed
             break
-          case 'PASTE_CELL': {
-            const { $vxe } = $table
-            const { clipboard } = $vxe
-            item.disabled = !clipboard || !clipboard.text
-            break
-          }
         }
       }
       break
