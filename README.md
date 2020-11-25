@@ -83,7 +83,7 @@ VXETable.use(VXETablePluginMenus, {
 | RESET_RESIZABLE | 重置列宽状态 | — |
 | RESET_ALL | 重置列的所有状态 | — |
 
-## demo
+## Demo
 
 ```html
 <vxe-table

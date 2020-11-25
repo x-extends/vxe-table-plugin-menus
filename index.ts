@@ -571,6 +571,7 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
     case 'CLEAR_FIXED_COLUMN': {
       item.disabled = !column
       if (column) {
+        const { mouseConfig, mouseOpts, fnrOpts } = $table
         const isChildCol = !!column.parentId
         switch (code) {
           case 'SORT_ASC':
@@ -588,15 +589,18 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
               }
             }
             break
-          case 'OPEN_FIND':
+          case 'OPEN_FIND': {
+            item.disabled = !(fnrOpts && mouseConfig && mouseOpts.area && fnrOpts.isFind)
+            break
+          }
           case 'OPEN_REPLACE': {
-            item.disabled = !($table.mouseConfig && $table.mouseOpts.area)
+            item.disabled = !(fnrOpts && mouseConfig && mouseOpts.area && fnrOpts.isReplace)
             break
           }
           case 'COPY_CELL':
           case 'CUT_CELL':
           case 'PASTE_CELL': {
-            const cellAreas = $table.mouseConfig && $table.mouseOpts.area ? $table.getCellAreas() : []
+            const cellAreas = mouseConfig && mouseOpts.area ? $table.getCellAreas() : []
             item.disabled = cellAreas.length > 1
             if (!item.disabled) {
               switch (code) {
@@ -611,7 +615,7 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
           }
           case 'MERGE_OR_CLEAR':
           case 'MERGE_CELL': {
-            const cellAreas = $table.mouseConfig && $table.mouseOpts.area ? $table.getCellAreas() : []
+            const cellAreas = mouseConfig && mouseOpts.area ? $table.getCellAreas() : []
             item.disabled = !cellAreas.length || (cellAreas.length === 1 && cellAreas[0].rows.length === 1 && cellAreas[0].cols.length === 1) || !checkCellOverlay(params, cellAreas)
             break
           }
