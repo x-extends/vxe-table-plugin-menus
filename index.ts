@@ -621,6 +621,14 @@ function checkPrivilege(item: VxeTableDefines.MenuFirstOption | VxeTableDefines.
           case 'PASTE_CELL': {
             const cellAreas = mouseConfig && mouseOpts.area ? $table.getCellAreas() : []
             item.disabled = cellAreas.length > 1
+            if (!item.disabled) {
+              switch (code) {
+                case 'PASTE_CELL': 
+                  const { clipboard } = instance.appContext.config.globalProperties.$vxe as VXETableByVueProperty
+                  item.disabled = !clipboard || !clipboard.text
+                  break
+              }
+            }
             break
           }
           case 'MERGE_OR_CLEAR':
@@ -638,11 +646,6 @@ function checkPrivilege(item: VxeTableDefines.MenuFirstOption | VxeTableDefines.
           case 'CLEAR_FIXED_COLUMN':
             item.disabled = isChildCol || !column.fixed
             break
-          case 'PASTE_CELL': {
-            const { clipboard } = instance.appContext.config.globalProperties.$vxe as VXETableByVueProperty
-            item.disabled = !clipboard || !clipboard.text
-            break
-          }
         }
       }
       break
