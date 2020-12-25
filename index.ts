@@ -296,6 +296,20 @@ const menuMap = {
     $table.clearMergeFooterItems()
   },
   /**
+   * 编辑单元格
+   */
+  EDIT_CELL(params: MenuLinkParams) {
+    const { $table, row, column } = params
+    $table.setActiveCell(row, column.property)
+  },
+  /**
+   * 编辑行
+   */
+  EDIT_ROW(params: MenuLinkParams) {
+    const { $table, row } = params
+    $table.setActiveRow(row)
+  },
+  /**
    * 插入数据
    */
   INSERT_ROW(params: MenuLinkParams) {
@@ -526,6 +540,7 @@ const menuMap = {
 function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: InterceptorMenuParams) {
   let { code } = item
   let { $table, columns, column } = params
+  const { editConfig, mouseConfig, mouseOpts, fnrOpts } = $table
   switch (code) {
     case 'CLEAR_SORT': {
       item.disabled = !columns.some((column) => column.sortable && column.order)
@@ -546,6 +561,11 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
       item.disabled = !beenMerges.length
       break
     }
+    case 'EDIT_ROW': {
+      item.disabled = !editConfig || !columns.some((column) => column.editRender)
+      break
+    }
+    case 'EDIT_CELL':
     case 'CLEAR_CELL':
     case 'CLEAR_ROW':
     case 'COPY_CELL':
@@ -571,7 +591,6 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
     case 'CLEAR_FIXED_COLUMN': {
       item.disabled = !column
       if (column) {
-        const { mouseConfig, mouseOpts, fnrOpts } = $table
         const isChildCol = !!column.parentId
         switch (code) {
           case 'SORT_ASC':
@@ -595,6 +614,10 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
           }
           case 'OPEN_REPLACE': {
             item.disabled = !(fnrOpts && mouseConfig && mouseOpts.area && fnrOpts.isReplace)
+            break
+          }
+          case 'EDIT_CELL': {
+            item.disabled = !editConfig || !column.editRender
             break
           }
           case 'COPY_CELL':
