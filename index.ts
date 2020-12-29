@@ -26,9 +26,9 @@ function handleFixedColumn(fixed: VxeColumnPropTypes.Fixed) {
 function handleCopyOrCut(params: VxeGlobalMenusHandles.MenusCallbackParams, isCut?: boolean) {
   const { $table, row, column } = params
   if (row && column) {
-    const { props, instance, computeMaps } = $table
+    const { props, instance } = $table
     const { mouseConfig } = props
-    const { computeMouseOpts } = computeMaps
+    const { computeMouseOpts } = $table.getComputeMaps()
     const mouseOpts = computeMouseOpts.value
     let text = ''
     if (mouseConfig && mouseOpts.area) {
@@ -76,9 +76,9 @@ function checkCellOverlay(params: VxeGlobalInterceptorHandles.InterceptorMenuPar
 
 function getBeenMerges(params: VxeGlobalMenusHandles.MenusCallbackParams | VxeGlobalInterceptorHandles.InterceptorMenuParams) {
   const { $table } = params
-  const { props, computeMaps } = $table
+  const { props } = $table
   const { mouseConfig } = props
-  const { computeMouseOpts } = computeMaps
+  const { computeMouseOpts } = $table.getComputeMaps()
   const mouseOpts = computeMouseOpts.value
   const { visibleData } = $table.getTableData()
   const { visibleColumn } = $table.getTableColumn()
@@ -115,9 +115,9 @@ const menuMap = {
   CLEAR_CELL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
     const { $table, row, column } = params
     if (row && column) {
-      const { props, computeMaps} = $table
+      const { props } = $table
       const { mouseConfig } = props
-      const { computeMouseOpts } = computeMaps
+      const { computeMouseOpts } = $table.getComputeMaps()
       const mouseOpts = computeMouseOpts.value
       if (mouseConfig && mouseOpts.area) {
         const cellAreas = $table.getCellAreas()
@@ -170,9 +170,9 @@ const menuMap = {
   REVERT_CELL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
     const { $table, row, column } = params
     if (row && column) {
-      const { props, computeMaps} = $table
+      const { props } = $table
       const { mouseConfig } = props
-      const { computeMouseOpts } = computeMaps
+      const { computeMouseOpts } = $table.getComputeMaps()
       const mouseOpts = computeMouseOpts.value
       if (mouseConfig && mouseOpts.area) {
         const cellAreas = $table.getCellAreas()
@@ -236,9 +236,9 @@ const menuMap = {
    */
   PASTE_CELL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
     const { $table, row, column } = params
-    const { props, instance, computeMaps} = $table
+    const { props, instance } = $table
     const { mouseConfig } = props
-    const { computeMouseOpts } = computeMaps
+    const { computeMouseOpts } = $table.getComputeMaps()
     const mouseOpts = computeMouseOpts.value
     if (mouseConfig && mouseOpts.area) {
       $table.pasteCellArea()
@@ -313,6 +313,20 @@ const menuMap = {
     const { $table } = params
     $table.clearMergeCells()
     $table.clearMergeFooterItems()
+  },
+  /**
+   * 编辑单元格
+   */
+  EDIT_CELL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
+    const { $table, row, column } = params
+    $table.setActiveCell(row, column.property)
+  },
+  /**
+   * 编辑行
+   */
+  EDIT_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
+    const { $table, row } = params
+    $table.setActiveRow(row)
   },
   /**
    * 插入数据
@@ -545,7 +559,8 @@ const menuMap = {
 function checkPrivilege(item: VxeTableDefines.MenuFirstOption | VxeTableDefines.MenuChildOption, params: VxeGlobalInterceptorHandles.InterceptorMenuParams) {
   let { code } = item
   let { $table, columns, column } = params
-  const { props, instance, computeMaps } = $table
+  const { props, instance } = $table
+  const { editConfig, mouseConfig } = props
   switch (code) {
     case 'CLEAR_SORT': {
       item.disabled = !columns.some((column) => column.sortable && column.order)
@@ -566,6 +581,7 @@ function checkPrivilege(item: VxeTableDefines.MenuFirstOption | VxeTableDefines.
       item.disabled = !beenMerges.length
       break
     }
+    case 'EDIT_CELL':
     case 'CLEAR_CELL':
     case 'CLEAR_ROW':
     case 'COPY_CELL':
@@ -591,8 +607,7 @@ function checkPrivilege(item: VxeTableDefines.MenuFirstOption | VxeTableDefines.
     case 'CLEAR_FIXED_COLUMN': {
       item.disabled = !column
       if (column) {
-        const { mouseConfig } = props
-        const { computeMouseOpts } = computeMaps
+        const { computeMouseOpts } = $table.getComputeMaps()
         const mouseOpts = computeMouseOpts.value
         const isChildCol = !!column.parentId
         switch (code) {
@@ -616,6 +631,10 @@ function checkPrivilege(item: VxeTableDefines.MenuFirstOption | VxeTableDefines.
             item.disabled = !(mouseConfig && mouseOpts.area)
             break
           }
+          case 'EDIT_CELL': {
+            item.disabled = !editConfig || !column.editRender
+            break
+          }
           case 'COPY_CELL':
           case 'CUT_CELL':
           case 'PASTE_CELL': {
@@ -623,7 +642,7 @@ function checkPrivilege(item: VxeTableDefines.MenuFirstOption | VxeTableDefines.
             item.disabled = cellAreas.length > 1
             if (!item.disabled) {
               switch (code) {
-                case 'PASTE_CELL': 
+                case 'PASTE_CELL':
                   const { clipboard } = instance.appContext.config.globalProperties.$vxe as VXETableByVueProperty
                   item.disabled = !clipboard || !clipboard.text
                   break
@@ -670,7 +689,7 @@ interface VXETablePluginMenusOptions {
   copy?: typeof handleCopy;
 }
 
-function setup (options?: VXETablePluginMenusOptions) {
+function setup(options?: VXETablePluginMenusOptions) {
   if (options && options.copy) {
     handleCopy = options.copy
   }
