@@ -49,7 +49,7 @@ function handleCopyOrCut(params: VxeGlobalMenusHandles.MenusCallbackParams, isCu
   }
 }
 
-function checkCellOverlay(params: VxeGlobalInterceptorHandles.InterceptorMenuParams, cellAreas: VxeTableProDefines.MouseCellArea[]) {
+function checkCellOverlay(params: VxeGlobalInterceptorHandles.InterceptorShowMenuParams, cellAreas: VxeTableProDefines.MouseCellArea[]) {
   const { $table } = params
   const { visibleData } = $table.getTableData()
   const { visibleColumn } = $table.getTableColumn()
@@ -74,7 +74,7 @@ function checkCellOverlay(params: VxeGlobalInterceptorHandles.InterceptorMenuPar
   return true
 }
 
-function getBeenMerges(params: VxeGlobalMenusHandles.MenusCallbackParams | VxeGlobalInterceptorHandles.InterceptorMenuParams) {
+function getBeenMerges(params: VxeGlobalMenusHandles.MenusCallbackParams | VxeGlobalInterceptorHandles.InterceptorShowMenuParams) {
   const { $table } = params
   const { props } = $table
   const { mouseConfig } = props
@@ -556,7 +556,7 @@ const menuMap = {
   }
 }
 
-function checkPrivilege(item: VxeTableDefines.MenuFirstOption | VxeTableDefines.MenuChildOption, params: VxeGlobalInterceptorHandles.InterceptorMenuParams) {
+function checkPrivilege(item: VxeTableDefines.MenuFirstOption | VxeTableDefines.MenuChildOption, params: VxeGlobalInterceptorHandles.InterceptorShowMenuParams) {
   let { code } = item
   let { $table, columns, column } = params
   const { props, instance } = $table
@@ -672,7 +672,7 @@ function checkPrivilege(item: VxeTableDefines.MenuFirstOption | VxeTableDefines.
   }
 }
 
-function handlePrivilegeEvent(params: VxeGlobalInterceptorHandles.InterceptorMenuParams) {
+function handlePrivilegeEvent(params: VxeGlobalInterceptorHandles.InterceptorShowMenuParams) {
   params.options.forEach((list) => {
     list.forEach((item) => {
       checkPrivilege(item, params)
