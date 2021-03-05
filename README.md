@@ -1,6 +1,6 @@
 # vxe-table-plugin-menus
 
-[![gitee star](https://gitee.com/xuliangzhan_admin/vxe-table-plugin-menus/badge/star.svg?theme=dark)](https://gitee.com/xuliangzhan_admin/vxe-table-plugin-menus/stargazers)
+[![gitee star](https://gitee.com/x-extends/vxe-table-plugin-menus/badge/star.svg?theme=dark)](https://gitee.com/x-extends/vxe-table-plugin-menus/stargazers)
 [![npm version](https://img.shields.io/npm/v/vxe-table-plugin-menus.svg?style=flat-square)](https://www.npmjs.com/package/vxe-table-plugin-menus)
 [![npm downloads](https://img.shields.io/npm/dm/vxe-table-plugin-menus.svg?style=flat-square)](http://npm-stat.com/charts.html?package=vxe-table-plugin-menus)
 [![npm license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE)
@@ -10,11 +10,12 @@
 ## Installing
 
 ```shell
-npm install xe-utils vxe-table vxe-table-plugin-menus
+npm install xe-utils vxe-table@next vxe-table-plugin-menus@next
 ```
 
 ```javascript
 // ...
+import VXETable from 'vxe-table'
 import VXETablePluginMenus from 'vxe-table-plugin-menus'
 // ...
 
@@ -104,23 +105,14 @@ export default {
   data () {
     return {
       tableData: [
-        {
-          id: 100,
-          name: 'test1',
-          age: 26,
-          sex: '1'
-        }
+        { id: 100,  name: 'test1', age: 28, sex: '1' },
+        { id: 101,  name: 'test2', age: 32, sex: '0' },
+        { id: 102,  name: 'test3', age: 36, sex: '1' }
       ],
       bodyMenus: [
         [
-          {
-            code: 'EXPORT_ALL',
-            name: '导出.csv'
-          },
-          {
-            code: 'INSERT_ACTIVED_ROW',
-            name: '新增'
-          }
+          { code: 'EXPORT_ALL', name: '导出.csv' },
+          { code: 'INSERT_ACTIVED_ROW', name: '新增' }
         ]
       ]
     }

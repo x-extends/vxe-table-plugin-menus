@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import XEUtils from 'xe-utils/ctor'
 import {
   VXETableByVueProperty,
@@ -9,7 +8,6 @@ import {
   VxeGlobalInterceptorHandles,
   VxeGlobalMenusHandles
 } from 'vxe-table/lib/vxe-table'
-/* eslint-enable no-unused-vars */
 
 let handleCopy: (content: string | number) => boolean
 
@@ -101,458 +99,6 @@ function handleClearMergeCells(params: VxeGlobalMenusHandles.MenusCallbackParams
   const beenMerges = getBeenMerges(params)
   if (beenMerges.length) {
     $table.removeMergeCells(beenMerges)
-  }
-}
-
-function abandoned(code: string, newCode: string) {
-  console.warn(`The code "${code}" has been scrapped, please use "${newCode}"`)
-}
-
-const menuMap = {
-  /**
-   * 清除单元格数据的值；如果启用 mouse-config.area 功能，则清除区域范围内的单元格数据
-   */
-  CLEAR_CELL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, row, column } = params
-    if (row && column) {
-      const { props } = $table
-      const { mouseConfig } = props
-      const { computeMouseOpts } = $table.getComputeMaps()
-      const mouseOpts = computeMouseOpts.value
-      if (mouseConfig && mouseOpts.area) {
-        const cellAreas = $table.getCellAreas()
-        if (cellAreas && cellAreas.length) {
-          cellAreas.forEach(areaItem => {
-            const { rows, cols } = areaItem
-            cols.forEach(column => {
-              rows.forEach(row => {
-                $table.clearData(row, column.property)
-              })
-            })
-          })
-        }
-      } else {
-        $table.clearData(row, column.property)
-      }
-    }
-  },
-  /**
-   * 清除行数据的值
-   */
-  CLEAR_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, row } = params
-    if (row) {
-      $table.clearData(row)
-    }
-  },
-  // 已废弃
-  CLEAR_SELECTED_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    abandoned('CLEAR_SELECTED_ROW', 'CLEAR_CHECKBOX_ROW')
-    return menuMap.CLEAR_CHECKBOX_ROW(params)
-  },
-  /**
-   * 清除复选框选中行数据的值
-   */
-  CLEAR_CHECKBOX_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table } = params
-    $table.clearData($table.getCheckboxRecords())
-  },
-  /**
-   * 清除所有数据的值
-   */
-  CLEAR_ALL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table } = params
-    $table.clearData()
-  },
-  /**
-   * 还原单元格数据的值；如果启用 mouse-config.area 功能，则还原区域范围内的单元格数据
-   */
-  REVERT_CELL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, row, column } = params
-    if (row && column) {
-      const { props } = $table
-      const { mouseConfig } = props
-      const { computeMouseOpts } = $table.getComputeMaps()
-      const mouseOpts = computeMouseOpts.value
-      if (mouseConfig && mouseOpts.area) {
-        const cellAreas = $table.getCellAreas()
-        if (cellAreas && cellAreas.length) {
-          cellAreas.forEach(areaItem => {
-            const { rows, cols } = areaItem
-            cols.forEach(column => {
-              rows.forEach(row => {
-                $table.revertData(row, column.property)
-              })
-            })
-          })
-        }
-      } else {
-        $table.revertData(row, column.property)
-      }
-    }
-  },
-  /**
-   * 还原行数据的值
-   */
-  REVERT_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, row } = params
-    if (row) {
-      $table.revertData(row)
-    }
-  },
-  // 已废弃
-  REVERT_SELECTED_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    abandoned('REVERT_SELECTED_ROW', 'REVERT_CHECKBOX_ROW')
-    return menuMap.REVERT_CHECKBOX_ROW(params)
-  },
-  /**
-   * 还原复选框选中行数据的值
-   */
-  REVERT_CHECKBOX_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table } = params
-    $table.revertData($table.getCheckboxRecords())
-  },
-  /**
-   * 还原所有数据的值
-   */
-  REVERT_ALL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table } = params
-    $table.revertData()
-  },
-  /**
-   * 复制单元格数据的值；如果启用 mouse-config.area 功能，则复制区域范围内的单元格数据，支持 Excel 和 WPS
-   */
-  COPY_CELL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    handleCopyOrCut(params)
-  },
-  /**
-   * 剪贴单元格数据的值；如果启用 mouse-config.area 功能，则剪贴区域范围内的单元格数据，支持 Excel 和 WPS
-   */
-  CUT_CELL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    handleCopyOrCut(params, true)
-  },
-  /**
-   * 粘贴从表格中被复制的数据；如果启用 mouse-config.area 功能，则粘贴区域范围内的单元格数据，不支持读取剪贴板
-   */
-  PASTE_CELL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, row, column } = params
-    const { props, instance } = $table
-    const { mouseConfig } = props
-    const { computeMouseOpts } = $table.getComputeMaps()
-    const mouseOpts = computeMouseOpts.value
-    if (mouseConfig && mouseOpts.area) {
-      $table.pasteCellArea()
-    } else {
-      const { clipboard } = instance.appContext.config.globalProperties.$vxe as VXETableByVueProperty
-      // 读取内置剪贴板
-      if (clipboard && clipboard.text) {
-        XEUtils.set(row, column.property, clipboard.text)
-      }
-    }
-  },
-  /**
-   * 如果启用 mouse-config.area 功能，如果所选区域内已存在合并单元格，则取消临时合并，否则临时合并
-   */
-  MERGE_OR_CLEAR(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table } = params
-    const cellAreas = $table.getCellAreas()
-    const beenMerges = getBeenMerges(params)
-    if (beenMerges.length) {
-      $table.removeMergeCells(beenMerges)
-    } else {
-      $table.setMergeCells(
-        cellAreas.map(({ rows, cols }) => {
-          return {
-            row: rows[0],
-            col: cols[0],
-            rowspan: rows.length,
-            colspan: cols.length
-          }
-        })
-      )
-    }
-  },
-  /**
-   * 如果启用 mouse-config.area 功能，临时合并区域范围内的单元格，不管是否存在已合并
-   */
-  MERGE_CELL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table } = params
-    const { instance } = $table
-    const { modal, t } = instance.appContext.config.globalProperties.$vxe as VXETableByVueProperty
-    const { visibleData } = $table.getTableData()
-    const { visibleColumn } = $table.getTableColumn()
-    const cellAreas = $table.getCellAreas()
-    handleClearMergeCells(params)
-    if (cellAreas.some(({ rows, cols }) => rows.length === visibleData.length || cols.length === visibleColumn.length)) {
-      if (modal) {
-        modal.message({ message: t('vxe.pro.area.mergeErr'), status: 'error', id: 'operErr' })
-      }
-      return
-    }
-    $table.setMergeCells(
-      cellAreas.map(({ rows, cols }) => {
-        return {
-          row: rows[0],
-          col: cols[0],
-          rowspan: rows.length,
-          colspan: cols.length
-        }
-      })
-    )
-  },
-  /**
-   * 如果启用 mouse-config.area 功能，清除区域范围内单元格的临时合并状态
-   */
-  CLEAR_MERGE_CELL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    handleClearMergeCells(params)
-  },
-  /**
-   * 清除所有单元格及表尾的临时合并状态
-   */
-  CLEAR_ALL_MERGE(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table } = params
-    $table.clearMergeCells()
-    $table.clearMergeFooterItems()
-  },
-  /**
-   * 编辑单元格
-   */
-  EDIT_CELL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, row, column } = params
-    $table.setActiveCell(row, column.property)
-  },
-  /**
-   * 编辑行
-   */
-  EDIT_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, row } = params
-    $table.setActiveRow(row)
-  },
-  /**
-   * 插入数据
-   */
-  INSERT_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, menu } = params
-    $table.insert(menu.params)
-  },
-  /**
-   * 插入数据并激活编辑状态
-   */
-  INSERT_ACTIVED_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, menu, column } = params
-    let args: any[] = menu.params || [] // [{}, 'field']
-    $table.insert(args[0])
-      .then(({ row }) => $table.setActiveCell(row, args[1] || column.property))
-  },
-  /**
-   * 插入数据到指定位置
-   */
-  INSERT_AT_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, menu, row } = params
-    if (row) {
-      $table.insertAt(menu.params, row)
-    }
-  },
-  /**
-   * 插入数据到指定位置并激活编辑状态
-   */
-  INSERT_AT_ACTIVED_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, menu, row, column } = params
-    if (row) {
-      let args: any[] = menu.params || [] // [{}, 'field']
-      $table.insertAt(args[0], row)
-        .then(({ row }) => $table.setActiveCell(row, args[1] || column.property))
-    }
-  },
-  /**
-   * 移除行数据
-   */
-  DELETE_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, row } = params
-    if (row) {
-      $table.remove(row)
-    }
-  },
-  // 已废弃
-  DELETE_SELECTED_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    abandoned('DELETE_SELECTED_ROW', 'DELETE_CHECKBOX_ROW')
-    return menuMap.DELETE_CHECKBOX_ROW(params)
-  },
-  /**
-   * 移除复选框选中行数据
-   */
-  DELETE_CHECKBOX_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table } = params
-    $table.removeCheckboxRow()
-  },
-  /**
-   * 移除所有行数据
-   */
-  DELETE_ALL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table } = params
-    $table.remove()
-  },
-  /**
-   * 清除排序条件
-   */
-  CLEAR_SORT(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table } = params
-    $table.clearSort()
-  },
-  /**
-   * 按所选列的值升序
-   */
-  SORT_ASC(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, column } = params
-    if (column) {
-      $table.sort(column.property, 'asc')
-    }
-  },
-  /**
-   * 按所选列的值倒序
-   */
-  SORT_DESC(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, column } = params
-    if (column) {
-      $table.sort(column.property, 'desc')
-    }
-  },
-  /**
-   * 清除复选框选中列的筛选条件
-   */
-  CLEAR_FILTER(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, column } = params
-    if (column) {
-      $table.clearFilter(column)
-    }
-  },
-  /**
-   * 清除所有列筛选条件
-   */
-  CLEAR_ALL_FILTER(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table } = params
-    $table.clearFilter()
-  },
-  /**
-   * 根据单元格值筛选
-   */
-  FILTER_CELL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, row, column } = params
-    if (row && column) {
-      let { property, filters } = column
-      if (filters.length) {
-        let option = filters[0]
-        option.data = XEUtils.get(row, property)
-        option.checked = true
-        $table.updateData()
-      }
-    }
-  },
-  /**
-   * 导出行数据
-   */
-  EXPORT_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, menu, row } = params
-    if (row) {
-      let opts = { data: [row] }
-      $table.exportData(XEUtils.assign(opts, menu.params[0]))
-    }
-  },
-  // 已废弃
-  EXPORT_SELECTED_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    abandoned('EXPORT_SELECTED_ROW', 'EXPORT_CHECKBOX_ROW')
-    return menuMap.EXPORT_CHECKBOX_ROW(params)
-  },
-  /**
-   * 导出复选框选中行数据
-   */
-  EXPORT_CHECKBOX_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, menu } = params
-    let opts = { data: $table.getCheckboxRecords() }
-    $table.exportData(XEUtils.assign(opts, menu.params[0]))
-  },
-  /**
-   * 导出所有行数据
-   */
-  EXPORT_ALL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, menu } = params
-    $table.exportData(menu.params)
-  },
-  /**
-   * 打印所有行数据
-   */
-  PRINT_ALL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, menu } = params
-    $table.print(menu.params)
-  },
-  // 已废弃
-  PRINT_SELECTED_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    abandoned('PRINT_SELECTED_ROW', 'PRINT_CHECKBOX_ROW')
-    return menuMap.PRINT_CHECKBOX_ROW(params)
-  },
-  /**
-   * 打印复选框选中行
-   */
-  PRINT_CHECKBOX_ROW(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, menu } = params
-    let opts = { data: $table.getCheckboxRecords() }
-    $table.print(XEUtils.assign(opts, menu.params))
-  },
-  /**
-   * 打开查找功能
-   */
-  OPEN_FIND(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table } = params
-    $table.openFind()
-  },
-  /**
-   * 打开替换功能
-   */
-  OPEN_REPLACE(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table } = params
-    $table.openReplace()
-  },
-  /**
-   * 隐藏当前列
-   */
-  HIDDEN_COLUMN(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table, column } = params
-    if (column) {
-      $table.hideColumn(column)
-    }
-  },
-  /**
-   * 将列固定到左侧
-   */
-  FIXED_LEFT_COLUMN: handleFixedColumn('left'),
-  /**
-   * 将列固定到右侧
-   */
-  FIXED_RIGHT_COLUMN: handleFixedColumn('right'),
-  /**
-   * 清除固定列
-   */
-  CLEAR_FIXED_COLUMN: handleFixedColumn(null),
-  /**
-   * 重置列的可视状态
-   */
-  RESET_COLUMN(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table } = params
-    $table.resetColumn({ visible: true, resizable: false })
-  },
-  /**
-   * 重置列宽状态
-   */
-  RESET_RESIZABLE(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table } = params
-    $table.resetColumn({ visible: false, resizable: true })
-  },
-  /**
-   * 重置列的所有状态
-   */
-  RESET_ALL(params: VxeGlobalMenusHandles.MenusCallbackParams) {
-    const { $table } = params
-    $table.resetColumn(true)
   }
 }
 
@@ -705,8 +251,431 @@ export const VXETablePluginMenus = {
       handleCopy = window.XEClipboard.copy
     }
     setup(options)
+
+    menus.mixin({
+      /**
+       * 清除单元格数据的值；如果启用 mouse-config.area 功能，则清除区域范围内的单元格数据
+       */
+      CLEAR_CELL(params) {
+        const { $table, row, column } = params
+        if (row && column) {
+          const { props } = $table
+          const { mouseConfig } = props
+          const { computeMouseOpts } = $table.getComputeMaps()
+          const mouseOpts = computeMouseOpts.value
+          if (mouseConfig && mouseOpts.area) {
+            const cellAreas = $table.getCellAreas()
+            if (cellAreas && cellAreas.length) {
+              cellAreas.forEach(areaItem => {
+                const { rows, cols } = areaItem
+                cols.forEach(column => {
+                  rows.forEach(row => {
+                    $table.clearData(row, column.property)
+                  })
+                })
+              })
+            }
+          } else {
+            $table.clearData(row, column.property)
+          }
+        }
+      },
+      /**
+       * 清除行数据的值
+       */
+      CLEAR_ROW(params) {
+        const { $table, row } = params
+        if (row) {
+          $table.clearData(row)
+        }
+      },
+      /**
+       * 清除复选框选中行数据的值
+       */
+      CLEAR_CHECKBOX_ROW(params) {
+        const { $table } = params
+        $table.clearData($table.getCheckboxRecords())
+      },
+      /**
+       * 清除所有数据的值
+       */
+      CLEAR_ALL(params) {
+        const { $table } = params
+        $table.clearData()
+      },
+      /**
+       * 还原单元格数据的值；如果启用 mouse-config.area 功能，则还原区域范围内的单元格数据
+       */
+      REVERT_CELL(params) {
+        const { $table, row, column } = params
+        if (row && column) {
+          const { props } = $table
+          const { mouseConfig } = props
+          const { computeMouseOpts } = $table.getComputeMaps()
+          const mouseOpts = computeMouseOpts.value
+          if (mouseConfig && mouseOpts.area) {
+            const cellAreas = $table.getCellAreas()
+            if (cellAreas && cellAreas.length) {
+              cellAreas.forEach(areaItem => {
+                const { rows, cols } = areaItem
+                cols.forEach(column => {
+                  rows.forEach(row => {
+                    $table.revertData(row, column.property)
+                  })
+                })
+              })
+            }
+          } else {
+            $table.revertData(row, column.property)
+          }
+        }
+      },
+      /**
+       * 还原行数据的值
+       */
+      REVERT_ROW(params) {
+        const { $table, row } = params
+        if (row) {
+          $table.revertData(row)
+        }
+      },
+      /**
+       * 还原复选框选中行数据的值
+       */
+      REVERT_CHECKBOX_ROW(params) {
+        const { $table } = params
+        $table.revertData($table.getCheckboxRecords())
+      },
+      /**
+       * 还原所有数据的值
+       */
+      REVERT_ALL(params) {
+        const { $table } = params
+        $table.revertData()
+      },
+      /**
+       * 复制单元格数据的值；如果启用 mouse-config.area 功能，则复制区域范围内的单元格数据，支持 Excel 和 WPS
+       */
+      COPY_CELL(params) {
+        handleCopyOrCut(params)
+      },
+      /**
+       * 剪贴单元格数据的值；如果启用 mouse-config.area 功能，则剪贴区域范围内的单元格数据，支持 Excel 和 WPS
+       */
+      CUT_CELL(params) {
+        handleCopyOrCut(params, true)
+      },
+      /**
+       * 粘贴从表格中被复制的数据；如果启用 mouse-config.area 功能，则粘贴区域范围内的单元格数据，不支持读取剪贴板
+       */
+      PASTE_CELL(params) {
+        const { $table, row, column } = params
+        const { props, instance } = $table
+        const { mouseConfig } = props
+        const { computeMouseOpts } = $table.getComputeMaps()
+        const mouseOpts = computeMouseOpts.value
+        if (mouseConfig && mouseOpts.area) {
+          $table.pasteCellArea()
+        } else {
+          const { clipboard } = instance.appContext.config.globalProperties.$vxe as VXETableByVueProperty
+          // 读取内置剪贴板
+          if (clipboard && clipboard.text) {
+            XEUtils.set(row, column.property, clipboard.text)
+          }
+        }
+      },
+      /**
+       * 如果启用 mouse-config.area 功能，如果所选区域内已存在合并单元格，则取消临时合并，否则临时合并
+       */
+      MERGE_OR_CLEAR(params) {
+        const { $table } = params
+        const cellAreas = $table.getCellAreas()
+        const beenMerges = getBeenMerges(params)
+        if (beenMerges.length) {
+          $table.removeMergeCells(beenMerges)
+        } else {
+          $table.setMergeCells(
+            cellAreas.map(({ rows, cols }) => {
+              return {
+                row: rows[0],
+                col: cols[0],
+                rowspan: rows.length,
+                colspan: cols.length
+              }
+            })
+          )
+        }
+      },
+      /**
+       * 如果启用 mouse-config.area 功能，临时合并区域范围内的单元格，不管是否存在已合并
+       */
+      MERGE_CELL(params) {
+        const { $table } = params
+        const { instance } = $table
+        const { modal, t } = instance.appContext.config.globalProperties.$vxe as VXETableByVueProperty
+        const { visibleData } = $table.getTableData()
+        const { visibleColumn } = $table.getTableColumn()
+        const cellAreas = $table.getCellAreas()
+        handleClearMergeCells(params)
+        if (cellAreas.some(({ rows, cols }) => rows.length === visibleData.length || cols.length === visibleColumn.length)) {
+          if (modal) {
+            modal.message({ message: t('vxe.pro.area.mergeErr'), status: 'error', id: 'operErr' })
+          }
+          return
+        }
+        $table.setMergeCells(
+          cellAreas.map(({ rows, cols }) => {
+            return {
+              row: rows[0],
+              col: cols[0],
+              rowspan: rows.length,
+              colspan: cols.length
+            }
+          })
+        )
+      },
+      /**
+       * 如果启用 mouse-config.area 功能，清除区域范围内单元格的临时合并状态
+       */
+      CLEAR_MERGE_CELL(params) {
+        handleClearMergeCells(params)
+      },
+      /**
+       * 清除所有单元格及表尾的临时合并状态
+       */
+      CLEAR_ALL_MERGE(params) {
+        const { $table } = params
+        $table.clearMergeCells()
+        $table.clearMergeFooterItems()
+      },
+      /**
+       * 编辑单元格
+       */
+      EDIT_CELL(params) {
+        const { $table, row, column } = params
+        $table.setActiveCell(row, column.property)
+      },
+      /**
+       * 编辑行
+       */
+      EDIT_ROW(params) {
+        const { $table, row } = params
+        $table.setActiveRow(row)
+      },
+      /**
+       * 插入数据
+       */
+      INSERT_ROW(params) {
+        const { $table, menu } = params
+        $table.insert(menu.params)
+      },
+      /**
+       * 插入数据并激活编辑状态
+       */
+      INSERT_ACTIVED_ROW(params) {
+        const { $table, menu, column } = params
+        let args: any[] = menu.params || [] // [{}, 'field']
+        $table.insert(args[0])
+          .then(({ row }) => $table.setActiveCell(row, args[1] || column.property))
+      },
+      /**
+       * 插入数据到指定位置
+       */
+      INSERT_AT_ROW(params) {
+        const { $table, menu, row } = params
+        if (row) {
+          $table.insertAt(menu.params, row)
+        }
+      },
+      /**
+       * 插入数据到指定位置并激活编辑状态
+       */
+      INSERT_AT_ACTIVED_ROW(params) {
+        const { $table, menu, row, column } = params
+        if (row) {
+          let args: any[] = menu.params || [] // [{}, 'field']
+          $table.insertAt(args[0], row)
+            .then(({ row }) => $table.setActiveCell(row, args[1] || column.property))
+        }
+      },
+      /**
+       * 移除行数据
+       */
+      DELETE_ROW(params) {
+        const { $table, row } = params
+        if (row) {
+          $table.remove(row)
+        }
+      },
+      /**
+       * 移除复选框选中行数据
+       */
+      DELETE_CHECKBOX_ROW(params) {
+        const { $table } = params
+        $table.removeCheckboxRow()
+      },
+      /**
+       * 移除所有行数据
+       */
+      DELETE_ALL(params) {
+        const { $table } = params
+        $table.remove()
+      },
+      /**
+       * 清除排序条件
+       */
+      CLEAR_SORT(params) {
+        const { $table } = params
+        $table.clearSort()
+      },
+      /**
+       * 按所选列的值升序
+       */
+      SORT_ASC(params) {
+        const { $table, column } = params
+        if (column) {
+          $table.sort(column.property, 'asc')
+        }
+      },
+      /**
+       * 按所选列的值倒序
+       */
+      SORT_DESC(params) {
+        const { $table, column } = params
+        if (column) {
+          $table.sort(column.property, 'desc')
+        }
+      },
+      /**
+       * 清除复选框选中列的筛选条件
+       */
+      CLEAR_FILTER(params) {
+        const { $table, column } = params
+        if (column) {
+          $table.clearFilter(column)
+        }
+      },
+      /**
+       * 清除所有列筛选条件
+       */
+      CLEAR_ALL_FILTER(params) {
+        const { $table } = params
+        $table.clearFilter()
+      },
+      /**
+       * 根据单元格值筛选
+       */
+      FILTER_CELL(params) {
+        const { $table, row, column } = params
+        if (row && column) {
+          let { property, filters } = column
+          if (filters.length) {
+            let option = filters[0]
+            option.data = XEUtils.get(row, property)
+            option.checked = true
+            $table.updateData()
+          }
+        }
+      },
+      /**
+       * 导出行数据
+       */
+      EXPORT_ROW(params) {
+        const { $table, menu, row } = params
+        if (row) {
+          let opts = { data: [row] }
+          $table.exportData(XEUtils.assign(opts, menu.params[0]))
+        }
+      },
+      /**
+       * 导出复选框选中行数据
+       */
+      EXPORT_CHECKBOX_ROW(params) {
+        const { $table, menu } = params
+        let opts = { data: $table.getCheckboxRecords() }
+        $table.exportData(XEUtils.assign(opts, menu.params[0]))
+      },
+      /**
+       * 导出所有行数据
+       */
+      EXPORT_ALL(params) {
+        const { $table, menu } = params
+        $table.exportData(menu.params)
+      },
+      /**
+       * 打印所有行数据
+       */
+      PRINT_ALL(params) {
+        const { $table, menu } = params
+        $table.print(menu.params)
+      },
+      /**
+       * 打印复选框选中行
+       */
+      PRINT_CHECKBOX_ROW(params) {
+        const { $table, menu } = params
+        let opts = { data: $table.getCheckboxRecords() }
+        $table.print(XEUtils.assign(opts, menu.params))
+      },
+      /**
+       * 打开查找功能
+       */
+      OPEN_FIND(params) {
+        const { $table } = params
+        $table.openFind()
+      },
+      /**
+       * 打开替换功能
+       */
+      OPEN_REPLACE(params) {
+        const { $table } = params
+        $table.openReplace()
+      },
+      /**
+       * 隐藏当前列
+       */
+      HIDDEN_COLUMN(params) {
+        const { $table, column } = params
+        if (column) {
+          $table.hideColumn(column)
+        }
+      },
+      /**
+       * 将列固定到左侧
+       */
+      FIXED_LEFT_COLUMN: handleFixedColumn('left'),
+      /**
+       * 将列固定到右侧
+       */
+      FIXED_RIGHT_COLUMN: handleFixedColumn('right'),
+      /**
+       * 清除固定列
+       */
+      CLEAR_FIXED_COLUMN: handleFixedColumn(null),
+      /**
+       * 重置列的可视状态
+       */
+      RESET_COLUMN(params) {
+        const { $table } = params
+        $table.resetColumn({ visible: true, resizable: false })
+      },
+      /**
+       * 重置列宽状态
+       */
+      RESET_RESIZABLE(params) {
+        const { $table } = params
+        $table.resetColumn({ visible: false, resizable: true })
+      },
+      /**
+       * 重置列的所有状态
+       */
+      RESET_ALL(params) {
+        const { $table } = params
+        $table.resetColumn(true)
+      }
+    })
+    
     interceptor.add('event.showMenu', handlePrivilegeEvent)
-    menus.mixin(menuMap)
   }
 }
 
