@@ -1,13 +1,14 @@
 import XEUtils from 'xe-utils/ctor'
 import {
-  VXETableByVueProperty,
-  VXETableInstance,
+  VXETableCore,
   VxeColumnPropTypes,
   VxeTableDefines,
   VxeTableProDefines,
   VxeGlobalInterceptorHandles,
   VxeGlobalMenusHandles
 } from 'vxe-table/lib/vxe-table'
+
+let vxetable:VXETableCore
 
 let handleCopy: (content: string | number) => boolean
 
@@ -24,7 +25,7 @@ function handleFixedColumn(fixed: VxeColumnPropTypes.Fixed) {
 function handleCopyOrCut(params: VxeGlobalMenusHandles.MenusCallbackParams, isCut?: boolean) {
   const { $table, row, column } = params
   if (row && column) {
-    const { props, instance } = $table
+    const { props } = $table
     const { mouseConfig } = props
     const { computeMouseOpts } = $table.getComputeMaps()
     const mouseOpts = computeMouseOpts.value
@@ -33,10 +34,9 @@ function handleCopyOrCut(params: VxeGlobalMenusHandles.MenusCallbackParams, isCu
       const clipRest = isCut ? $table.cutCellArea() : $table.copyCellArea()
       text = clipRest.text
     } else {
-      const $vxe = instance.appContext.config.globalProperties.$vxe as VXETableByVueProperty
-      text = XEUtils.toString(XEUtils.get(row, column.property))
+      text = XEUtils.toValueString(XEUtils.get(row, column.property))
       // 操作内置剪贴板
-      $vxe.clipboard = { text }
+      vxetable.config.clipboard = { text }
     }
     // 开始复制操作
     if (XEUtils.isFunction(handleCopy)) {
@@ -105,7 +105,7 @@ function handleClearMergeCells(params: VxeGlobalMenusHandles.MenusCallbackParams
 function checkPrivilege(item: VxeTableDefines.MenuFirstOption | VxeTableDefines.MenuChildOption, params: VxeGlobalInterceptorHandles.InterceptorShowMenuParams) {
   let { code } = item
   let { $table, columns, column } = params
-  const { props, instance } = $table
+  const { props } = $table
   const { editConfig, mouseConfig } = props
   switch (code) {
     case 'CLEAR_SORT': {
@@ -189,7 +189,7 @@ function checkPrivilege(item: VxeTableDefines.MenuFirstOption | VxeTableDefines.
             if (!item.disabled) {
               switch (code) {
                 case 'PASTE_CELL':
-                  const { clipboard } = instance.appContext.config.globalProperties.$vxe as VXETableByVueProperty
+                  const { clipboard } = vxetable.config
                   item.disabled = !clipboard || !clipboard.text
                   break
               }
@@ -235,7 +235,7 @@ interface VXETablePluginMenusOptions {
   copy?: typeof handleCopy;
 }
 
-function setup(options?: VXETablePluginMenusOptions) {
+function pluginSetup(options?: VXETablePluginMenusOptions) {
   if (options && options.copy) {
     handleCopy = options.copy
   }
@@ -245,12 +245,16 @@ function setup(options?: VXETablePluginMenusOptions) {
  * 基于 vxe-table 表格的增强插件，提供实用的快捷菜单集
  */
 export const VXETablePluginMenus = {
-  setup,
-  install({ interceptor, menus }: VXETableInstance, options?: VXETablePluginMenusOptions) {
+  setup: pluginSetup,
+  install(vxetablecore: VXETableCore, options?: VXETablePluginMenusOptions) {
+    const { interceptor, menus } = vxetablecore
+
+    vxetable = vxetablecore
+
     if (window.XEClipboard) {
       handleCopy = window.XEClipboard.copy
     }
-    setup(options)
+    pluginSetup(options)
 
     menus.mixin({
       /**
@@ -370,14 +374,14 @@ export const VXETablePluginMenus = {
        */
       PASTE_CELL(params) {
         const { $table, row, column } = params
-        const { props, instance } = $table
+        const { props } = $table
         const { mouseConfig } = props
         const { computeMouseOpts } = $table.getComputeMaps()
         const mouseOpts = computeMouseOpts.value
         if (mouseConfig && mouseOpts.area) {
           $table.pasteCellArea()
         } else {
-          const { clipboard } = instance.appContext.config.globalProperties.$vxe as VXETableByVueProperty
+          const { clipboard } = vxetable.config
           // 读取内置剪贴板
           if (clipboard && clipboard.text) {
             XEUtils.set(row, column.property, clipboard.text)
@@ -411,15 +415,13 @@ export const VXETablePluginMenus = {
        */
       MERGE_CELL(params) {
         const { $table } = params
-        const { instance } = $table
-        const { modal, t } = instance.appContext.config.globalProperties.$vxe as VXETableByVueProperty
         const { visibleData } = $table.getTableData()
         const { visibleColumn } = $table.getTableColumn()
         const cellAreas = $table.getCellAreas()
         handleClearMergeCells(params)
         if (cellAreas.some(({ rows, cols }) => rows.length === visibleData.length || cols.length === visibleColumn.length)) {
-          if (modal) {
-            modal.message({ message: t('vxe.pro.area.mergeErr'), status: 'error', id: 'operErr' })
+          if (vxetable.modal) {
+            vxetable.modal.message({ message: vxetable.t('vxe.pro.area.mergeErr'), status: 'error', id: 'operErr' })
           }
           return
         }
