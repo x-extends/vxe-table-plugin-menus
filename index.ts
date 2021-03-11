@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import XEUtils from 'xe-utils/ctor'
+import XEUtils from 'xe-utils'
 import {
   VXETable,
   MenuLinkParams,
@@ -9,7 +8,6 @@ import {
   MouseCellArea,
   Table
 } from 'vxe-table/lib/vxe-table'
-/* eslint-enable no-unused-vars */
 
 let handleCopy: (content: string | number) => boolean
 
