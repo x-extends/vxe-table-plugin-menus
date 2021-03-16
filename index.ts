@@ -1,12 +1,5 @@
 import XEUtils from 'xe-utils'
-import {
-  VXETableCore,
-  VxeColumnPropTypes,
-  VxeTableDefines,
-  VxeTableProDefines,
-  VxeGlobalInterceptorHandles,
-  VxeGlobalMenusHandles
-} from 'vxe-table/lib/vxe-table'
+import { VXETableCore,  VxeColumnPropTypes, VxeTableDefines, VxeTableProDefines, VxeGlobalInterceptorHandles, VxeGlobalMenusHandles } from 'vxe-table'
 
 let vxetable:VXETableCore
 
