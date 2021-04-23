@@ -1,9 +1,17 @@
 import XEUtils from 'xe-utils'
-import { VXETableCore,  VxeColumnPropTypes, VxeTableDefines, VxeTableProDefines, VxeGlobalInterceptorHandles, VxeGlobalMenusHandles } from 'vxe-table'
+import { VXETableCore, VxeTableConstructor, VxeTablePrivateMethods, VxeColumnPropTypes, VxeTableDefines, VxeTableProDefines, VxeGlobalInterceptorHandles, VxeGlobalMenusHandles } from 'vxe-table'
 
 let vxetable:VXETableCore
 
 let handleCopy: (content: string | number) => boolean
+
+const columnIndexOf = (cols: VxeTableDefines.ColumnInfo[], column: VxeTableDefines.ColumnInfo) => {
+  return XEUtils.findIndexOf(cols, item => item.id === column.id)
+}
+
+const rowIndexOf = ($table: VxeTableConstructor & VxeTablePrivateMethods, rows: any[], row: any) => {
+  return $table.findRowIndexOf(rows, row)
+}
 
 function handleFixedColumn(fixed: VxeColumnPropTypes.Fixed) {
   return function (params: VxeGlobalMenusHandles.MenusCallbackParams) {
@@ -29,7 +37,7 @@ function handleCopyOrCut(params: VxeGlobalMenusHandles.MenusCallbackParams, isCu
     } else {
       text = XEUtils.toValueString(XEUtils.get(row, column.property))
       // 操作内置剪贴板
-      vxetable.config.clipboard = { text }
+      vxetable.config.clipboard = { text, html: '' }
     }
     // 开始复制操作
     if (XEUtils.isFunction(handleCopy)) {
@@ -50,10 +58,10 @@ function checkCellOverlay(params: VxeGlobalInterceptorHandles.InterceptorShowMen
     const { rows, cols } = areaItem
     for (let rIndex = 0, rowSize = rows.length; rIndex < rowSize; rIndex++) {
       const offsetRow = rows[rIndex]
-      const orIndex = visibleData.indexOf(offsetRow)
+      const orIndex = rowIndexOf($table, visibleData, offsetRow)
       for (let cIndex = 0, colSize = cols.length; cIndex < colSize; cIndex++) {
         const offsetColumn = cols[cIndex]
-        const ocIndex = visibleColumn.indexOf(offsetColumn)
+        const ocIndex = columnIndexOf(visibleColumn, offsetColumn)
         const key = orIndex + ':' + ocIndex
         if (indexMaps[key]) {
           return false
@@ -78,10 +86,10 @@ function getBeenMerges(params: VxeGlobalMenusHandles.MenusCallbackParams | VxeGl
   return mergeList.filter(({ row: mergeRowIndex, col: mergeColIndex, rowspan: mergeRowspan, colspan: mergeColspan }) => {
     return cellAreas.some(areaItem => {
       const { rows, cols } = areaItem
-      const startRowIndex = visibleData.indexOf(rows[0])
-      const endRowIndex = visibleData.indexOf(rows[rows.length - 1])
-      const startColIndex = visibleColumn.indexOf(cols[0])
-      const endColIndex = visibleColumn.indexOf(cols[cols.length - 1])
+      const startRowIndex = rowIndexOf($table, visibleData, rows[0])
+      const endRowIndex = rowIndexOf($table, visibleData, rows[rows.length - 1])
+      const startColIndex = columnIndexOf(visibleColumn, cols[0])
+      const endColIndex = columnIndexOf(visibleColumn, cols[cols.length - 1])
       return mergeRowIndex >= startRowIndex && mergeRowIndex + mergeRowspan - 1 <= endRowIndex && mergeColIndex >= startColIndex && mergeColIndex + mergeColspan - 1 <= endColIndex
     })
   })
@@ -414,7 +422,7 @@ export const VXETablePluginMenus = {
         handleClearMergeCells(params)
         if (cellAreas.some(({ rows, cols }) => rows.length === visibleData.length || cols.length === visibleColumn.length)) {
           if (vxetable.modal) {
-            vxetable.modal.message({ message: vxetable.t('vxe.pro.area.mergeErr'), status: 'error', id: 'operErr' })
+            vxetable.modal.message({ content: vxetable.t('vxe.pro.area.mergeErr'), status: 'error', id: 'operErr' })
           }
           return
         }
