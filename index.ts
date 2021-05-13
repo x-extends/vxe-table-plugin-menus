@@ -7,7 +7,7 @@ import {
   MenuChildOption,
   MouseCellArea,
   Table
-} from 'vxe-table/lib/vxe-table'
+} from 'vxe-table'
 
 let handleCopy: (content: string | number) => boolean
 
@@ -30,7 +30,7 @@ function handleCopyOrCut(params: MenuLinkParams, isCut?: boolean) {
       text = clipRest.text
     } else {
       const { $vxe } = $table
-      text = XEUtils.toString(XEUtils.get(row, column.property))
+      text = XEUtils.toValueString(XEUtils.get(row, column.property))
       // 操作内置剪贴板
       $vxe.clipboard = { text }
     }
@@ -264,7 +264,7 @@ const menuMap = {
     handleClearMergeCells(params)
     if (cellAreas.some(({ rows, cols }) => rows.length === visibleData.length || cols.length === visibleColumn.length)) {
       if (modal) {
-        modal.message({ message: $vxe.t('vxe.pro.area.mergeErr'), status: 'error', id: 'operErr' })
+        modal.message({ content: $vxe.t('vxe.pro.area.mergeErr') as string, status: 'error', id: 'operErr' })
       }
       return
     }
@@ -667,6 +667,7 @@ function handlePrivilegeEvent(params: InterceptorMenuParams) {
       }
     })
   })
+  return true
 }
 
 interface VXETablePluginMenusOptions {
