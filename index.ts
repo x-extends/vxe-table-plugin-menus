@@ -230,6 +230,7 @@ function handlePrivilegeEvent(params: VxeGlobalInterceptorHandles.InterceptorSho
       }
     })
   })
+  return true
 }
 
 interface VXETablePluginMenusOptions {
