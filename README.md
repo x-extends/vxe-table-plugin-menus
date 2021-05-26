@@ -65,7 +65,8 @@ VXETable.use(VXETablePluginMenus, {
 | DELETE_ROW | 移除行数据 | — |
 | DELETE_CHECKBOX_ROW  | 移除复选框选中行数据 | — |
 | DELETE_ALL | 移除所有行数据 | — |
-| CLEAR_SORT | 清除排序条件 | — |
+| CLEAR_SORT | 清除所选列排序条件 | — |
+| CLEAR_ALL_SORT | 清除所有排序条件 | — |
 | SORT_ASC | 按所选列的值升序 | — |
 | SORT_DESC | 按所选列的值倒序 | — |
 | CLEAR_FILTER | 清除选中列的筛选条件 | — |

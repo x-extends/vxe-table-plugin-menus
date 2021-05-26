@@ -22,14 +22,18 @@ function handleFixedColumn(fixed: string) {
 }
 
 function handleCopyOrCut(params: MenuLinkParams, isCut?: boolean) {
-  const { $table, row, column } = params
+  const { $event, $table, row, column } = params
   if (row && column) {
+    const { $vxe } = $table
     let text = ''
     if ($table.mouseConfig && $table.mouseOpts.area) {
-      const clipRest = isCut ? $table.cutCellArea() : $table.copyCellArea()
-      text = clipRest.text
+      if (isCut) {
+        $table.triggerCutCellAreaEvent($event)
+      } else {
+        $table.triggerCopyCellAreaEvent($event)
+      }
+      text = $vxe.clipboard.text
     } else {
-      const { $vxe } = $table
       text = XEUtils.toValueString(XEUtils.get(row, column.property))
       // 操作内置剪贴板
       $vxe.clipboard = { text }
@@ -92,6 +96,7 @@ function handleClearMergeCells(params: { $table: Table, [key: string]: any }) {
   if (beenMerges.length) {
     $table.removeMergeCells(beenMerges)
   }
+  return beenMerges
 }
 
 function abandoned(code: string, newCode: string) {
@@ -217,9 +222,9 @@ const menuMap = {
    * 粘贴从表格中被复制的数据；如果启用 mouse-config.area 功能，则粘贴区域范围内的单元格数据，不支持读取剪贴板
    */
   PASTE_CELL(params: MenuLinkParams) {
-    const { $table, row, column } = params
+    const { $event, $table, row, column } = params
     if ($table.mouseConfig && $table.mouseOpts.area) {
-      $table.pasteCellArea()
+      $table.triggerPasteCellAreaEvent($event)
     } else {
       const { $vxe } = $table
       const { clipboard } = $vxe
@@ -233,12 +238,14 @@ const menuMap = {
    * 如果启用 mouse-config.area 功能，如果所选区域内已存在合并单元格，则取消临时合并，否则临时合并
    */
   MERGE_OR_CLEAR(params: MenuLinkParams) {
-    const { $table } = params
+    const { $event, $table } = params
     const cellAreas = $table.getCellAreas()
     const beenMerges = getBeenMerges(params)
+    let status = false
     if (beenMerges.length) {
       $table.removeMergeCells(beenMerges)
     } else {
+      status = true
       $table.setMergeCells(
         cellAreas.map(({ rows, cols }) => {
           return {
@@ -250,12 +257,14 @@ const menuMap = {
         })
       )
     }
+    const targetAreas = cellAreas.map(({ rows, cols }) => ({ rows, cols }))
+    $table.emitEvent('cell-area-merge', { status, targetAreas }, $event)
   },
   /**
    * 如果启用 mouse-config.area 功能，临时合并区域范围内的单元格，不管是否存在已合并
    */
   MERGE_CELL(params: MenuLinkParams) {
-    const { $table } = params
+    const { $event, $table } = params
     const { $vxe } = $table
     const { modal } = $vxe
     const { visibleData } = $table.getTableData()
@@ -278,20 +287,29 @@ const menuMap = {
         }
       })
     )
+    const targetAreas = cellAreas.map(({ rows, cols }) => ({ rows, cols }))
+    $table.emitEvent('cell-area-merge', { status: true, targetAreas }, $event)
   },
   /**
    * 如果启用 mouse-config.area 功能，清除区域范围内单元格的临时合并状态
    */
   CLEAR_MERGE_CELL(params: MenuLinkParams) {
-    handleClearMergeCells(params)
+    const { $event, $table } = params
+    const beenMerges = handleClearMergeCells(params)
+    if (beenMerges.length) {
+      $table.emitEvent('clear-cell-area-merge', { mergeCells: beenMerges }, $event)
+    }
   },
   /**
    * 清除所有单元格及表尾的临时合并状态
    */
   CLEAR_ALL_MERGE(params: MenuLinkParams) {
-    const { $table } = params
+    const { $event, $table } = params
+    const mergeCells = $table.getMergeCells()
+    const mergeFooterItems = $table.getMergeFooterItems()
     $table.clearMergeCells()
     $table.clearMergeFooterItems()
+    $table.emitEvent('clear-merge', { mergeCells, mergeFooterItems }, $event)
   },
   /**
    * 编辑单元格
@@ -372,45 +390,63 @@ const menuMap = {
     $table.remove()
   },
   /**
-   * 清除排序条件
+   * 清除所选列排序条件
    */
   CLEAR_SORT(params: MenuLinkParams) {
-    const { $table } = params
-    $table.clearSort()
+    const { $event, $table, column } = params
+    if (column) {
+      $table.triggerSortEvent($event, column, null)
+    }
+  },
+  /**
+   * 清除所有排序条件
+   */
+  CLEAR_ALL_SORT(params: MenuLinkParams) {
+    const { $event, $table } = params
+    const sortList = $table.getSortColumns()
+    if (sortList.length) {
+      $table.clearSort()
+      $table.emitEvent('clear-sort', { sortList }, $event)
+    }
   },
   /**
    * 按所选列的值升序
    */
   SORT_ASC(params: MenuLinkParams) {
-    const { $table, column } = params
+    const { $event, $table, column } = params
     if (column) {
-      $table.sort(column.property, 'asc')
+      $table.triggerSortEvent($event, column, 'asc')
     }
   },
   /**
    * 按所选列的值倒序
    */
   SORT_DESC(params: MenuLinkParams) {
-    const { $table, column } = params
+    const { $event, $table, column } = params
     if (column) {
-      $table.sort(column.property, 'desc')
+      $table.triggerSortEvent($event, column, 'desc')
     }
   },
   /**
    * 清除复选框选中列的筛选条件
    */
   CLEAR_FILTER(params: MenuLinkParams) {
-    const { $table, column } = params
+    const { $event, $table, column } = params
     if (column) {
-      $table.clearFilter(column)
+      $table.handleClearFilter(column)
+      $table.confirmFilterEvent($event)
     }
   },
   /**
    * 清除所有列筛选条件
    */
   CLEAR_ALL_FILTER(params: MenuLinkParams) {
-    const { $table } = params
-    $table.clearFilter()
+    const { $event, $table } = params
+    const filterList = $table.getCheckedFilters()
+    if (filterList.length) {
+      $table.clearFilter()
+      $table.dispatchEvent('clear-filter', { filterList }, $event)
+    }
   },
   /**
    * 根据单元格值筛选
@@ -481,15 +517,15 @@ const menuMap = {
    * 打开查找功能
    */
   OPEN_FIND(params: MenuLinkParams) {
-    const { $table } = params
-    $table.openFind()
+    const { $event, $table } = params
+    $table.triggerFNROpenEvent($event, 'find')
   },
   /**
    * 打开替换功能
    */
   OPEN_REPLACE(params: MenuLinkParams) {
-    const { $table } = params
-    $table.openReplace()
+    const { $event, $table } = params
+    $table.triggerFNROpenEvent($event, 'replace')
   },
   /**
    * 隐藏当前列
@@ -540,12 +576,14 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
   let { $table, columns, column } = params
   const { editConfig, mouseConfig, mouseOpts, fnrOpts } = $table
   switch (code) {
-    case 'CLEAR_SORT': {
-      item.disabled = !columns.some((column) => column.sortable && column.order)
+    case 'CLEAR_ALL_SORT': {
+      const sortList = $table.getSortColumns()
+      item.disabled = !sortList.length
       break
     }
     case 'CLEAR_ALL_FILTER': {
-      item.disabled = !columns.some((column) => column.filters && column.filters.some((option) => option.checked))
+      const filterList = $table.getCheckedFilters()
+      item.disabled = !filterList.length
       break
     }
     case 'CLEAR_ALL_MERGE': {
@@ -576,6 +614,7 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
     case 'INSERT_AT_ROW':
     case 'INSERT_AT_ACTIVED_ROW':
     case 'DELETE_ROW':
+    case 'CLEAR_SORT':
     case 'SORT_ASC':
     case 'SORT_DESC':
     case 'CLEAR_FILTER':
@@ -591,6 +630,10 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
       if (column) {
         const isChildCol = !!column.parentId
         switch (code) {
+          case 'CLEAR_SORT': {
+            item.disabled = !column.sortable || !column.order
+            break
+          }
           case 'SORT_ASC':
           case 'SORT_DESC':
             item.disabled = !column.sortable
