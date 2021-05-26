@@ -573,7 +573,7 @@ const menuMap = {
 
 function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: InterceptorMenuParams) {
   let { code } = item
-  let { $table, columns, column } = params
+  let { $table, columns, row, column } = params
   const { editConfig, mouseConfig, mouseOpts, fnrOpts } = $table
   switch (code) {
     case 'CLEAR_ALL_SORT': {
@@ -635,11 +635,12 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
             break
           }
           case 'SORT_ASC':
-          case 'SORT_DESC':
+          case 'SORT_DESC': {
             item.disabled = !column.sortable
             break
+          }
           case 'FILTER_CELL':
-          case 'CLEAR_FILTER':
+          case 'CLEAR_FILTER': {
             item.disabled = !column.filters || !column.filters.length
             if (!item.disabled) {
               switch (code) {
@@ -649,6 +650,15 @@ function checkPrivilege(item: MenuFirstOption | MenuChildOption, params: Interce
               }
             }
             break
+          }
+          case 'REVERT_CELL': {
+            item.disabled = !row || !column.property || !$table.isUpdateByRow(row, column.property)
+            break
+          }
+          case 'REVERT_ROW': {
+            item.disabled = !row || !column.property || !$table.isUpdateByRow(row)
+            break
+          }
           case 'OPEN_FIND': {
             item.disabled = !(fnrOpts && mouseConfig && mouseOpts.area && fnrOpts.isFind)
             break
