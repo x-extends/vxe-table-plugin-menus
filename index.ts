@@ -24,7 +24,7 @@ function handleFixedColumn(fixed: VxeColumnPropTypes.Fixed) {
 }
 
 function handleCopyOrCut(params: VxeGlobalMenusHandles.MenusCallbackParams, isCut?: boolean) {
-  const { $table, row, column } = params
+  const { $event, $table, row, column } = params
   if (row && column) {
     const { props } = $table
     const { mouseConfig } = props
@@ -32,8 +32,12 @@ function handleCopyOrCut(params: VxeGlobalMenusHandles.MenusCallbackParams, isCu
     const mouseOpts = computeMouseOpts.value
     let text = ''
     if (mouseConfig && mouseOpts.area) {
-      const clipRest = isCut ? $table.cutCellArea() : $table.copyCellArea()
-      text = clipRest.text
+      if (isCut) {
+        $table.triggerCutCellAreaEvent($event)
+      } else {
+        $table.triggerCopyCellAreaEvent($event)
+      }
+      text = vxetable.config.clipboard.text
     } else {
       text = XEUtils.toValueString(XEUtils.get(row, column.property))
       // 操作内置剪贴板
@@ -101,20 +105,23 @@ function handleClearMergeCells(params: VxeGlobalMenusHandles.MenusCallbackParams
   if (beenMerges.length) {
     $table.removeMergeCells(beenMerges)
   }
+  return beenMerges
 }
 
 function checkPrivilege(item: VxeTableDefines.MenuFirstOption | VxeTableDefines.MenuChildOption, params: VxeGlobalInterceptorHandles.InterceptorShowMenuParams) {
   let { code } = item
-  let { $table, columns, column } = params
+  let { $table, row, column } = params
   const { props } = $table
   const { editConfig, mouseConfig } = props
   switch (code) {
-    case 'CLEAR_SORT': {
-      item.disabled = !columns.some((column) => column.sortable && column.order)
+    case 'CLEAR_ALL_SORT': {
+      const sortList = $table.getSortColumns()
+      item.disabled = !sortList.length
       break
     }
     case 'CLEAR_ALL_FILTER': {
-      item.disabled = !columns.some((column) => column.filters && column.filters.some((option) => option.checked))
+      const filterList = $table.getCheckedFilters()
+      item.disabled = !filterList.length
       break
     }
     case 'CLEAR_ALL_MERGE': {
@@ -141,6 +148,7 @@ function checkPrivilege(item: VxeTableDefines.MenuFirstOption | VxeTableDefines.
     case 'INSERT_AT_ROW':
     case 'INSERT_AT_ACTIVED_ROW':
     case 'DELETE_ROW':
+    case 'CLEAR_SORT':
     case 'SORT_ASC':
     case 'SORT_DESC':
     case 'CLEAR_FILTER':
@@ -158,6 +166,10 @@ function checkPrivilege(item: VxeTableDefines.MenuFirstOption | VxeTableDefines.
         const mouseOpts = computeMouseOpts.value
         const isChildCol = !!column.parentId
         switch (code) {
+          case 'CLEAR_SORT': {
+            item.disabled = !column.sortable || !column.order
+            break
+          }
           case 'SORT_ASC':
           case 'SORT_DESC':
             item.disabled = !column.sortable
@@ -173,6 +185,14 @@ function checkPrivilege(item: VxeTableDefines.MenuFirstOption | VxeTableDefines.
               }
             }
             break
+          case 'REVERT_CELL': {
+            item.disabled = !row || !column.property || !$table.isUpdateByRow(row, column.property)
+            break
+          }
+          case 'REVERT_ROW': {
+            item.disabled = !row || !column.property || !$table.isUpdateByRow(row)
+            break
+          }
           case 'OPEN_FIND':
           case 'OPEN_REPLACE': {
             item.disabled = !(mouseConfig && mouseOpts.area)
@@ -375,13 +395,13 @@ export const VXETablePluginMenus = {
        * 粘贴从表格中被复制的数据；如果启用 mouse-config.area 功能，则粘贴区域范围内的单元格数据，不支持读取剪贴板
        */
       PASTE_CELL(params) {
-        const { $table, row, column } = params
+        const { $event, $table, row, column } = params
         const { props } = $table
         const { mouseConfig } = props
         const { computeMouseOpts } = $table.getComputeMaps()
         const mouseOpts = computeMouseOpts.value
         if (mouseConfig && mouseOpts.area) {
-          $table.pasteCellArea()
+          $table.triggerPasteCellAreaEvent($event)
         } else {
           const { clipboard } = vxetable.config
           // 读取内置剪贴板
@@ -394,12 +414,14 @@ export const VXETablePluginMenus = {
        * 如果启用 mouse-config.area 功能，如果所选区域内已存在合并单元格，则取消临时合并，否则临时合并
        */
       MERGE_OR_CLEAR(params) {
-        const { $table } = params
+        const { $event, $table } = params
         const cellAreas = $table.getCellAreas()
         const beenMerges = getBeenMerges(params)
+        let status = false
         if (beenMerges.length) {
           $table.removeMergeCells(beenMerges)
         } else {
+          status = true
           $table.setMergeCells(
             cellAreas.map(({ rows, cols }) => {
               return {
@@ -411,12 +433,14 @@ export const VXETablePluginMenus = {
             })
           )
         }
+        const targetAreas = cellAreas.map(({ rows, cols }) => ({ rows, cols }))
+        $table.dispatchEvent('cell-area-merge', { status, targetAreas }, $event)
       },
       /**
        * 如果启用 mouse-config.area 功能，临时合并区域范围内的单元格，不管是否存在已合并
        */
       MERGE_CELL(params) {
-        const { $table } = params
+        const { $event, $table } = params
         const { visibleData } = $table.getTableData()
         const { visibleColumn } = $table.getTableColumn()
         const cellAreas = $table.getCellAreas()
@@ -437,20 +461,29 @@ export const VXETablePluginMenus = {
             }
           })
         )
+        const targetAreas = cellAreas.map(({ rows, cols }) => ({ rows, cols }))
+        $table.dispatchEvent('cell-area-merge', { status: true, targetAreas }, $event)
       },
       /**
        * 如果启用 mouse-config.area 功能，清除区域范围内单元格的临时合并状态
        */
       CLEAR_MERGE_CELL(params) {
-        handleClearMergeCells(params)
+        const { $event, $table } = params
+        const beenMerges = handleClearMergeCells(params)
+        if (beenMerges.length) {
+          $table.dispatchEvent('clear-cell-area-merge', { mergeCells: beenMerges }, $event)
+        }
       },
       /**
        * 清除所有单元格及表尾的临时合并状态
        */
       CLEAR_ALL_MERGE(params) {
-        const { $table } = params
+        const { $event, $table } = params
+        const mergeCells = $table.getMergeCells()
+        const mergeFooterItems = $table.getMergeFooterItems()
         $table.clearMergeCells()
         $table.clearMergeFooterItems()
+        $table.dispatchEvent('clear-merge', { mergeCells, mergeFooterItems }, $event)
       },
       /**
        * 编辑单元格
@@ -526,45 +559,63 @@ export const VXETablePluginMenus = {
         $table.remove()
       },
       /**
-       * 清除排序条件
+       * 清除所选列排序条件
        */
       CLEAR_SORT(params) {
-        const { $table } = params
-        $table.clearSort()
+        const { $event, $table, column } = params
+        if (column) {
+          $table.triggerSortEvent($event, column, null)
+        }
+      },
+      /**
+       * 清除所有排序条件
+       */
+      CLEAR_ALL_SORT(params) {
+        const { $event, $table } = params
+        const sortList = $table.getSortColumns()
+        if (sortList.length) {
+          $table.clearSort()
+          $table.dispatchEvent('clear-sort', { sortList }, $event)
+        }
       },
       /**
        * 按所选列的值升序
        */
       SORT_ASC(params) {
-        const { $table, column } = params
+        const { $event, $table, column } = params
         if (column) {
-          $table.sort(column.property, 'asc')
+          $table.triggerSortEvent($event, column, 'asc')
         }
       },
       /**
        * 按所选列的值倒序
        */
       SORT_DESC(params) {
-        const { $table, column } = params
+        const { $event, $table, column } = params
         if (column) {
-          $table.sort(column.property, 'desc')
+          $table.triggerSortEvent($event, column, 'desc')
         }
       },
       /**
        * 清除复选框选中列的筛选条件
        */
       CLEAR_FILTER(params) {
-        const { $table, column } = params
+        const { $event, $table, column } = params
         if (column) {
-          $table.clearFilter(column)
+          $table.handleClearFilter(column)
+          $table.confirmFilterEvent($event)
         }
       },
       /**
        * 清除所有列筛选条件
        */
       CLEAR_ALL_FILTER(params) {
-        const { $table } = params
-        $table.clearFilter()
+        const { $event, $table } = params
+        const filterList = $table.getCheckedFilters()
+        if (filterList.length) {
+          $table.clearFilter()
+          $table.dispatchEvent('clear-filter', { filterList }, $event)
+        }
       },
       /**
        * 根据单元格值筛选
@@ -625,15 +676,15 @@ export const VXETablePluginMenus = {
        * 打开查找功能
        */
       OPEN_FIND(params) {
-        const { $table } = params
-        $table.openFind()
+        const { $event, $table } = params
+        $table.triggerFNROpenEvent($event, 'find')
       },
       /**
        * 打开替换功能
        */
       OPEN_REPLACE(params) {
-        const { $table } = params
-        $table.openReplace()
+        const { $event, $table } = params
+        $table.triggerFNROpenEvent($event, 'replace')
       },
       /**
        * 隐藏当前列
