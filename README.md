@@ -23,14 +23,10 @@ VXETable.use(VXETablePluginMenus)
 
 // Enable copy
 /*
-import XEClipboard from 'xe-clipboard'
-
 VXETable.use(VXETablePluginMenus, {
-  // 自定义处理函数，该示例使用 xe-clipboard 演示
   // copy (text) {
-  //   // ...
+  //   // 自定义复制函数
   // }
-  copy: XEClipboard.copy
 })
 */
 ```
