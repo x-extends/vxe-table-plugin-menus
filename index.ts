@@ -23,6 +23,36 @@ function handleFixedColumn (fixed: VxeColumnPropTypes.Fixed) {
   }
 }
 
+let copyElem: HTMLTextAreaElement
+
+function handleText (content: string | number) {
+  if (!copyElem) {
+    copyElem = document.createElement('textarea')
+    copyElem.id = '$XECopy'
+    const styles = copyElem.style
+    styles.width = '48px'
+    styles.height = '24px'
+    styles.position = 'fixed'
+    styles.zIndex = '0'
+    styles.left = '-500px'
+    styles.top = '-500px'
+    document.body.appendChild(copyElem)
+  }
+  copyElem.value = content === null || content === undefined ? '' : ('' + content)
+}
+
+function copyText (content: string | number): boolean {
+  let result = false
+  try {
+    handleText(content)
+    copyElem.select()
+    copyElem.setSelectionRange(0, copyElem.value.length)
+    result = document.execCommand('copy')
+    copyElem.blur()
+  } catch (e) {}
+  return result
+}
+
 function handleCopyOrCut (params: VxeGlobalMenusHandles.MenusCallbackParams, isCut?: boolean) {
   const { $event, $table, row, column } = params
   if (row && column) {
@@ -47,7 +77,7 @@ function handleCopyOrCut (params: VxeGlobalMenusHandles.MenusCallbackParams, isC
     if (XEUtils.isFunction(handleCopy)) {
       handleCopy(text)
     } else {
-      console.warn('Copy function does not exist, copy to clipboard failed.')
+      copyText(text)
     }
   }
 }
@@ -274,9 +304,6 @@ export const VXETablePluginMenus = {
 
     vxetable = vxetablecore
 
-    if (window.XEClipboard) {
-      handleCopy = window.XEClipboard.copy
-    }
     pluginSetup(options)
 
     menus.mixin({
@@ -732,14 +759,6 @@ export const VXETablePluginMenus = {
     })
 
     interceptor.add('event.showMenu', handlePrivilegeEvent)
-  }
-}
-
-declare global {
-  interface Window {
-    XEClipboard?: {
-      copy: (content: string | number) => boolean
-    };
   }
 }
 
