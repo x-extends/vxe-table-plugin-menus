@@ -708,11 +708,12 @@ function checkPrivilege (item: MenuFirstOption | MenuChildOption, params: Interc
             item.disabled = cellAreas.length > 1
             if (!item.disabled) {
               switch (code) {
-                case 'PASTE_CELL':
+                case 'PASTE_CELL': {
                   const { $vxe } = $table
                   const { clipboard } = $vxe
                   item.disabled = !clipboard || !clipboard.text
                   break
+                }
               }
             }
             break
