@@ -10,7 +10,7 @@
 ## Installing
 
 ```shell
-npm install xe-utils vxe-table vxe-table-plugin-menus
+npm install xe-utils vxe-table@3 vxe-table-plugin-menus@2
 ```
 
 ```javascript
