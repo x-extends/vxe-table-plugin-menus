@@ -1,7 +1,7 @@
 import XEUtils from 'xe-utils'
 import { VXETableCore, VxeTableConstructor, VxeTablePrivateMethods, VxeColumnPropTypes, VxeTableDefines, VxeTableProDefines, VxeGlobalInterceptorHandles, VxeGlobalMenusHandles } from 'vxe-table'
 
-let vxetable:VXETableCore
+let vxetable: VXETableCore
 
 let handleCopy: (content: string | number) => boolean
 
@@ -69,7 +69,7 @@ function handleCopyOrCut (params: VxeGlobalMenusHandles.MenusCallbackParams, isC
       }
       text = vxetable.config.clipboard.text
     } else {
-      text = XEUtils.toValueString(XEUtils.get(row, column.property))
+      text = XEUtils.toValueString(XEUtils.get(row, column.field))
       // 操作内置剪贴板
       vxetable.config.clipboard = { text, html: '' }
     }
@@ -216,11 +216,11 @@ function checkPrivilege (item: VxeTableDefines.MenuFirstOption | VxeTableDefines
             }
             break
           case 'REVERT_CELL': {
-            item.disabled = !row || !column.property || !$table.isUpdateByRow(row, column.property)
+            item.disabled = !row || !column.field || !$table.isUpdateByRow(row, column.field)
             break
           }
           case 'REVERT_ROW': {
-            item.disabled = !row || !column.property || !$table.isUpdateByRow(row)
+            item.disabled = !row || !column.field || !$table.isUpdateByRow(row)
             break
           }
           case 'OPEN_FIND':
@@ -324,13 +324,13 @@ export const VXETablePluginMenus = {
                 const { rows, cols } = areaItem
                 cols.forEach(column => {
                   rows.forEach(row => {
-                    $table.clearData(row, column.property)
+                    $table.clearData(row, column.field)
                   })
                 })
               })
             }
           } else {
-            $table.clearData(row, column.property)
+            $table.clearData(row, column.field)
           }
         }
       },
@@ -374,13 +374,13 @@ export const VXETablePluginMenus = {
                 const { rows, cols } = areaItem
                 cols.forEach(column => {
                   rows.forEach(row => {
-                    $table.revertData(row, column.property)
+                    $table.revertData(row, column.field)
                   })
                 })
               })
             }
           } else {
-            $table.revertData(row, column.property)
+            $table.revertData(row, column.field)
           }
         }
       },
@@ -434,7 +434,7 @@ export const VXETablePluginMenus = {
           const { clipboard } = vxetable.config
           // 读取内置剪贴板
           if (clipboard && clipboard.text) {
-            XEUtils.set(row, column.property, clipboard.text)
+            XEUtils.set(row, column.field, clipboard.text)
           }
         }
       },
@@ -518,14 +518,24 @@ export const VXETablePluginMenus = {
        */
       EDIT_CELL (params) {
         const { $table, row, column } = params
-        $table.setActiveCell(row, column.property)
+        if ($table.setEditCell) {
+          $table.setEditCell(row, column)
+        } else {
+          // 兼容老版本
+          $table.setActiveCell(row, column.field)
+        }
       },
       /**
        * 编辑行
        */
       EDIT_ROW (params) {
         const { $table, row } = params
-        $table.setActiveRow(row)
+        if ($table.setEditRow) {
+          $table.setEditRow(row)
+        } else {
+          // 兼容老版本
+          $table.setActiveRow(row)
+        }
       },
       /**
        * 插入数据
@@ -541,7 +551,14 @@ export const VXETablePluginMenus = {
         const { $table, menu, column } = params
         const args: any[] = menu.params || [] // [{}, 'field']
         $table.insert(args[0])
-          .then(({ row }) => $table.setActiveCell(row, args[1] || column.property))
+          .then(({ row }) => {
+            if ($table.setEditCell) {
+              $table.setEditCell(row, args[1] || column)
+            } else {
+              // 兼容老版本
+              $table.setActiveCell(row, args[1] || column.field)
+            }
+          })
       },
       /**
        * 插入数据到指定位置
@@ -560,7 +577,14 @@ export const VXETablePluginMenus = {
         if (row) {
           const args: any[] = menu.params || [] // [{}, 'field']
           $table.insertAt(args[0], row)
-            .then(({ row }) => $table.setActiveCell(row, args[1] || column.property))
+            .then(({ row }) => {
+              if ($table.setEditCell) {
+                $table.setEditCell(row, args[1] || column)
+              } else {
+                // 兼容老版本
+                $table.setActiveCell(row, args[1] || column.field)
+              }
+            })
         }
       },
       /**
@@ -651,10 +675,10 @@ export const VXETablePluginMenus = {
       FILTER_CELL (params) {
         const { $table, row, column } = params
         if (row && column) {
-          const { property, filters } = column
+          const { field, filters } = column
           if (filters.length) {
             const option = filters[0]
-            option.data = XEUtils.get(row, property)
+            option.data = XEUtils.get(row, field)
             option.checked = true
             $table.updateData()
           }
