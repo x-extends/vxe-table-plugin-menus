@@ -64,7 +64,7 @@ function handleCopyOrCut (params: MenuLinkParams, isCut?: boolean) {
       }
       text = $vxe.clipboard.text
     } else {
-      text = XEUtils.toValueString(XEUtils.get(row, column.property))
+      text = XEUtils.toValueString(XEUtils.get(row, column.field))
       // 操作内置剪贴板
       $vxe.clipboard = { text }
     }
@@ -147,13 +147,13 @@ const menuMap = {
             const { rows, cols } = areaItem
             cols.forEach(column => {
               rows.forEach(row => {
-                $table.clearData(row, column.property)
+                $table.clearData(row, column.field)
               })
             })
           })
         }
       } else {
-        $table.clearData(row, column.property)
+        $table.clearData(row, column.field)
       }
     }
   },
@@ -198,13 +198,13 @@ const menuMap = {
             const { rows, cols } = areaItem
             cols.forEach(column => {
               rows.forEach(row => {
-                $table.revertData(row, column.property)
+                $table.revertData(row, column.field)
               })
             })
           })
         }
       } else {
-        $table.revertData(row, column.property)
+        $table.revertData(row, column.field)
       }
     }
   },
@@ -260,7 +260,7 @@ const menuMap = {
       const { clipboard } = $vxe
       // 读取内置剪贴板
       if (clipboard && clipboard.text) {
-        XEUtils.set(row, column.property, clipboard.text)
+        XEUtils.set(row, column.field, clipboard.text)
       }
     }
   },
@@ -346,14 +346,24 @@ const menuMap = {
    */
   EDIT_CELL (params: MenuLinkParams) {
     const { $table, row, column } = params
-    $table.setActiveCell(row, column.property)
+    if ($table.setEditCell) {
+      $table.setEditCell(row, column)
+    } else {
+      // 兼容老版本
+      $table.setActiveCell(row, column.field)
+    }
   },
   /**
    * 编辑行
    */
   EDIT_ROW (params: MenuLinkParams) {
     const { $table, row } = params
-    $table.setActiveRow(row)
+    if ($table.setEditRow) {
+      $table.setEditRow(row)
+    } else {
+      // 兼容老版本
+      $table.setActiveRow(row)
+    }
   },
   /**
    * 插入数据
@@ -369,7 +379,14 @@ const menuMap = {
     const { $table, menu, column } = params
     const args: any[] = menu.params || []
     $table.insert(args[0])
-      .then(({ row }) => $table.setActiveCell(row, args[1] || column.property))
+      .then(({ row }) => {
+        if ($table.setEditCell) {
+          $table.setEditCell(row, args[1] || column)
+        } else {
+          // 兼容老版本
+          $table.setActiveCell(row, args[1] || column.field)
+        }
+      })
   },
   /**
    * 插入数据到指定位置
@@ -388,7 +405,14 @@ const menuMap = {
     if (row) {
       const args: any[] = menu.params || []
       $table.insertAt(args[0], row)
-        .then(({ row }) => $table.setActiveCell(row, args[1] || column.property))
+        .then(({ row }) => {
+          if ($table.setEditCell) {
+            $table.setEditCell(row, args[1] || column)
+          } else {
+            // 兼容老版本
+            $table.setActiveCell(row, args[1] || column.field)
+          }
+        })
     }
   },
   /**
@@ -682,11 +706,11 @@ function checkPrivilege (item: MenuFirstOption | MenuChildOption, params: Interc
             break
           }
           case 'REVERT_CELL': {
-            item.disabled = !row || !column.property || !$table.isUpdateByRow(row, column.property)
+            item.disabled = !row || !column.field || !$table.isUpdateByRow(row, column.field)
             break
           }
           case 'REVERT_ROW': {
-            item.disabled = !row || !column.property || !$table.isUpdateByRow(row)
+            item.disabled = !row || !column.field || !$table.isUpdateByRow(row)
             break
           }
           case 'OPEN_FIND': {
