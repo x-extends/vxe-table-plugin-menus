@@ -7,6 +7,10 @@
 
 基于 [vxe-table](https://www.npmjs.com/package/vxe-table) 的表格插件，提供实用的快捷菜单集
 
+## Compatibility
+
+对应 vxe-table v4 版本  
+
 ## Installing
 
 ```shell

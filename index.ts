@@ -54,7 +54,7 @@ function copyText (content: string | number): boolean {
 }
 
 function handleCopyOrCut (params: VxeGlobalMenusHandles.MenusCallbackParams, isCut?: boolean) {
-  const { $event, $table, row, column } = params
+  const { $event, $table, row, column } = params as VxeGlobalMenusHandles.MenusCallbackParams & { $table: VxeTableConstructor & VxeTablePrivateMethods }
   if (row && column) {
     const { props } = $table
     const { mouseConfig } = props
@@ -108,7 +108,7 @@ function checkCellOverlay (params: VxeGlobalInterceptorHandles.InterceptorShowMe
 }
 
 function getBeenMerges (params: VxeGlobalMenusHandles.MenusCallbackParams | VxeGlobalInterceptorHandles.InterceptorShowMenuParams) {
-  const { $table } = params
+  const { $table } = params as (VxeGlobalMenusHandles.MenusCallbackParams | VxeGlobalInterceptorHandles.InterceptorShowMenuParams) & { $table: VxeTableConstructor & VxeTablePrivateMethods }
   const { props } = $table
   const { mouseConfig } = props
   const { computeMouseOpts } = $table.getComputeMaps()
@@ -423,7 +423,7 @@ export const VXETablePluginMenus = {
        * 粘贴从表格中被复制的数据；如果启用 mouse-config.area 功能，则粘贴区域范围内的单元格数据，不支持读取剪贴板
        */
       PASTE_CELL (params) {
-        const { $event, $table, row, column } = params
+        const { $event, $table, row, column } = params as VxeGlobalMenusHandles.MenusCallbackParams & { $table: VxeTableConstructor & VxeTablePrivateMethods }
         const { props } = $table
         const { mouseConfig } = props
         const { computeMouseOpts } = $table.getComputeMaps()
@@ -614,7 +614,7 @@ export const VXETablePluginMenus = {
        * 清除所选列排序条件
        */
       CLEAR_SORT (params) {
-        const { $event, $table, column } = params
+        const { $event, $table, column } = params as VxeGlobalMenusHandles.MenusCallbackParams & { $table: VxeTableConstructor & VxeTablePrivateMethods }
         if (column) {
           $table.triggerSortEvent($event, column, null)
         }
@@ -634,7 +634,7 @@ export const VXETablePluginMenus = {
        * 按所选列的值升序
        */
       SORT_ASC (params) {
-        const { $event, $table, column } = params
+        const { $event, $table, column } = params as VxeGlobalMenusHandles.MenusCallbackParams & { $table: VxeTableConstructor & VxeTablePrivateMethods }
         if (column) {
           $table.triggerSortEvent($event, column, 'asc')
         }
@@ -643,7 +643,7 @@ export const VXETablePluginMenus = {
        * 按所选列的值倒序
        */
       SORT_DESC (params) {
-        const { $event, $table, column } = params
+        const { $event, $table, column } = params as VxeGlobalMenusHandles.MenusCallbackParams & { $table: VxeTableConstructor & VxeTablePrivateMethods }
         if (column) {
           $table.triggerSortEvent($event, column, 'desc')
         }
@@ -652,7 +652,7 @@ export const VXETablePluginMenus = {
        * 清除复选框选中列的筛选条件
        */
       CLEAR_FILTER (params) {
-        const { $event, $table, column } = params
+        const { $event, $table, column } = params as VxeGlobalMenusHandles.MenusCallbackParams & { $table: VxeTableConstructor & VxeTablePrivateMethods }
         if (column) {
           $table.handleClearFilter(column)
           $table.confirmFilterEvent($event)
@@ -728,14 +728,14 @@ export const VXETablePluginMenus = {
        * 打开查找功能
        */
       OPEN_FIND (params) {
-        const { $event, $table } = params
+        const { $event, $table } = params as VxeGlobalMenusHandles.MenusCallbackParams & { $table: VxeTableConstructor & VxeTablePrivateMethods }
         $table.triggerFNROpenEvent($event, 'find')
       },
       /**
        * 打开替换功能
        */
       OPEN_REPLACE (params) {
-        const { $event, $table } = params
+        const { $event, $table } = params as VxeGlobalMenusHandles.MenusCallbackParams & { $table: VxeTableConstructor & VxeTablePrivateMethods }
         $table.triggerFNROpenEvent($event, 'replace')
       },
       /**
