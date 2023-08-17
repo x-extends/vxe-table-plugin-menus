@@ -9,7 +9,7 @@
 
 ## Compatibility
 
-对应 vxe-table v4 版本  
+依赖 vxe-table v4 版本  
 
 ## Installing
 
