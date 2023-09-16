@@ -1,6 +1,6 @@
 {
   "name": "vxe-table-plugin-menus",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "基于 vxe-table 的表格插件，提供实用的快捷菜单集",
   "scripts": {
     "lib": "gulp build"
@@ -40,19 +40,20 @@
     "gulp-concat": "^2.6.1",
     "gulp-rename": "^2.0.0",
     "gulp-replace": "^1.0.0",
-    "gulp-sass": "^4.1.0",
+    "gulp-sass": "^5.1.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^5.0.1",
     "gulp-uglify": "^3.0.2",
     "markdown-doctest": "^1.1.0",
     "prettier": "^2.1.2",
+    "sass": "^1.55.0",
     "typescript": "^4.6.4",
     "vue": "^2.6.14",
-    "vxe-table": "^3.6.13",
-    "xe-utils": "^3.5.7"
+    "vxe-table": "^3.7.1",
+    "xe-utils": "^3.5.13"
   },
   "peerDependencies": {
-    "vxe-table": "^3.2.0"
+    "vxe-table": "^3.7.0"
   },
   "repository": {
     "type": "git",
