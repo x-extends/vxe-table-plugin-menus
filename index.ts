@@ -305,7 +305,7 @@ function pluginSetup (options?: VXETablePluginMenusOptions) {
 }
 
 /**
- * 基于 vxe-table 表格的增强插件，提供实用的快捷菜单集
+ * 基于 vxe-table 表格的扩展插件，提供实用的快捷菜单配置
  */
 export const VXETablePluginMenus = {
   setup: pluginSetup,
