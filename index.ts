@@ -1,7 +1,7 @@
 import XEUtils from 'xe-utils'
 import { VXETableCore, VxeTableConstructor, VxeTablePrivateMethods, VxeColumnPropTypes, VxeTableDefines, VxeTableProDefines, VxeGlobalInterceptorHandles, VxeGlobalMenusHandles } from 'vxe-table'
 
-let vxetable: VXETableCore
+let VXETableInstance: VXETableCore
 
 let handleCopy: (content: string | number) => boolean
 
@@ -69,11 +69,18 @@ function handleCopyOrCut (params: VxeGlobalMenusHandles.MenuMethodParams, isCut?
       } else {
         $table.triggerCopyCellAreaEvent($event)
       }
-      text = vxetable.config.clipboard.text
+      // 兼容老版本
+      const { clipboard } = (VXETableInstance as any).globalStore || (VXETableInstance as any).config
+      text = clipboard.text
     } else {
-      text = XEUtils.toValueString(XEUtils.get(row, column.field))
       // 操作内置剪贴板
-      vxetable.config.clipboard = { text, html: '' }
+      text = XEUtils.toValueString(XEUtils.get(row, column.field))
+      // 兼容老版本
+      if ((VXETableInstance as any).globalStore) {
+        (VXETableInstance as any).globalStore.clipboard = { text, html: '' }
+      } else if ((VXETableInstance as any).config) {
+        (VXETableInstance as any).config.clipboard = { text, html: '' }
+      }
     }
     // 开始复制操作
     if (XEUtils.isFunction(handleCopy)) {
@@ -242,7 +249,8 @@ function checkPrivilege (item: VxeTableDefines.MenuFirstOption | VxeTableDefines
             if (!item.disabled) {
               switch (code) {
                 case 'PASTE_CELL': {
-                  const { clipboard } = vxetable.config
+                  // 兼容老版本
+                  const { clipboard } = (VXETableInstance as any).globalStore || (VXETableInstance as any).config
                   item.disabled = !clipboard || !clipboard.text
                   break
                 }
@@ -301,14 +309,16 @@ function pluginSetup (options?: VXETablePluginMenusOptions) {
  */
 export const VXETablePluginMenus = {
   setup: pluginSetup,
-  install (vxetablecore: VXETableCore, options?: VXETablePluginMenusOptions) {
-    const { interceptor, menus } = vxetablecore
-
-    vxetable = vxetablecore
+  install (vxetable: VXETableCore, options?: VXETablePluginMenusOptions) {
+    VXETableInstance = vxetable
+    // 检查版本
+    if (!/^(4)\./.test(vxetable.version)) {
+      console.error('[vxe-table-plugin-menus] Version vxe-table 4.x is required')
+    }
 
     pluginSetup(options)
 
-    menus.mixin({
+    vxetable.menus.mixin({
       /**
        * 清除单元格数据的值；如果启用 mouse-config.area 功能，则清除区域范围内的单元格数据
        */
@@ -454,7 +464,8 @@ export const VXETablePluginMenus = {
           if (mouseConfig && mouseOpts.area) {
             $table.triggerPasteCellAreaEvent($event)
           } else {
-            const { clipboard } = vxetable.config
+            // 兼容老版本
+            const { clipboard } = (vxetable as any).globalStore || (vxetable as any).config
             // 读取内置剪贴板
             if (clipboard && clipboard.text) {
               XEUtils.set(row, column.field, clipboard.text)
@@ -868,7 +879,7 @@ export const VXETablePluginMenus = {
       }
     })
 
-    interceptor.add('event.showMenu', handlePrivilegeEvent)
+    vxetable.interceptor.add('event.showMenu', handlePrivilegeEvent)
   }
 }
 
