@@ -1,6 +1,6 @@
 import XEUtils from 'xe-utils'
 import {
-  VXETable,
+  VXETableCore,
   InterceptorMenuParams,
   MenuFirstOption,
   MenuChildOption,
@@ -8,6 +8,8 @@ import {
   VxeGlobalMenusHandles,
   Table
 } from 'vxe-table'
+
+let VXETableInstance: VXETableCore
 
 let handleCopy: (content: string | number) => boolean
 
@@ -56,7 +58,6 @@ function copyText (content: string | number): boolean {
 function handleCopyOrCut (params: VxeGlobalMenusHandles.MenuMethodParams, isCut?: boolean) {
   const { $event, $table, row, column } = params
   if (row && column) {
-    const { $vxe } = $table
     let text = ''
     if ($table.mouseConfig && $table.mouseOpts.area) {
       if (isCut) {
@@ -64,11 +65,18 @@ function handleCopyOrCut (params: VxeGlobalMenusHandles.MenuMethodParams, isCut?
       } else {
         $table.triggerCopyCellAreaEvent($event)
       }
-      text = $vxe.clipboard.text
+      // 兼容老版本
+      const { clipboard } = (VXETableInstance as any).globalStore ? (VXETableInstance as any).globalStore : $table.$vxe
+      text = clipboard.text
     } else {
-      text = XEUtils.toValueString(XEUtils.get(row, column.field))
       // 操作内置剪贴板
-      $vxe.clipboard = { text }
+      text = XEUtils.toValueString(XEUtils.get(row, column.field))
+      // 兼容老版本
+      if ((VXETableInstance as any).globalStore) {
+        (VXETableInstance as any).globalStore.clipboard = { text, html: '' }
+      } else if ($table.$vxe) {
+        $table.$vxe.clipboard = { text, html: '' }
+      }
     }
     // 开始复制操作
     if (XEUtils.isFunction(handleCopy)) {
@@ -243,8 +251,8 @@ function checkPrivilege (item: MenuFirstOption | MenuChildOption, params: Interc
             if (!item.disabled) {
               switch (code) {
                 case 'PASTE_CELL': {
-                  const { $vxe } = $table
-                  const { clipboard } = $vxe
+                  // 兼容老版本
+                  const { clipboard } = (VXETableInstance as any).globalStore ? (VXETableInstance as any).globalStore : $table.$vxe
                   item.disabled = !clipboard || !clipboard.text
                   break
                 }
@@ -303,7 +311,8 @@ function setup (options?: VXETablePluginMenusOptions) {
  */
 export const VXETablePluginMenus = {
   setup,
-  install (vxetable: typeof VXETable, options?: VXETablePluginMenusOptions) {
+  install (vxetable: VXETableCore, options?: VXETablePluginMenusOptions) {
+    VXETableInstance = vxetable
     // 检查版本
     if (!/^(2|3)\./.test(vxetable.version)) {
       console.error('[vxe-table-plugin-menus] Version vxe-table 3.x is required')
@@ -461,8 +470,8 @@ export const VXETablePluginMenus = {
           if ($table.mouseConfig && $table.mouseOpts.area) {
             $table.triggerPasteCellAreaEvent($event)
           } else {
-            const { $vxe } = $table
-            const { clipboard } = $vxe
+            // 兼容老版本
+            const { clipboard } = (vxetable as any).globalStore ? (vxetable as any).globalStore : $table.$vxe
             // 读取内置剪贴板
             if (clipboard && clipboard.text) {
               XEUtils.set(row, column.field, clipboard.text)
@@ -504,15 +513,13 @@ export const VXETablePluginMenus = {
       MERGE_CELL: {
         menuMethod (params: VxeGlobalMenusHandles.MenuMethodParams) {
           const { $event, $table } = params
-          const { $vxe } = $table
-          const { modal } = $vxe
           const { visibleData } = $table.getTableData()
           const { visibleColumn } = $table.getTableColumn()
           const cellAreas = $table.getCellAreas()
           handleClearMergeCells(params)
           if (cellAreas.some(({ rows, cols }) => rows.length === visibleData.length || cols.length === visibleColumn.length)) {
-            if (modal) {
-              modal.message({ content: $vxe.t('vxe.pro.area.mergeErr') as string, status: 'error', id: 'operErr' })
+            if (vxetable.modal) {
+              vxetable.modal.message({ content: vxetable.t('vxe.pro.area.mergeErr') as string, status: 'error', id: 'operErr' })
             }
             return
           }

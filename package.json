@@ -1,11 +1,12 @@
 {
   "name": "vxe-table-plugin-menus",
-  "version": "2.0.3",
+  "version": "2.1.1",
   "description": "基于 vxe-table 的表格插件，提供实用的快捷菜单集",
   "scripts": {
     "lib": "gulp build"
   },
   "files": [
+    "types",
     "dist",
     "*.ts",
     "*.d.ts"
@@ -14,7 +15,7 @@
   "unpkg": "dist/index.umd.js",
   "jsdelivr": "dist/index.umd.js",
   "style": "dist/style.css",
-  "typings": "index.ts",
+  "typings": "types/index.d.ts",
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@babel/plugin-transform-runtime": "^7.12.1",
