@@ -71,7 +71,7 @@ function handleCopyOrCut (params: VxeGlobalMenusHandles.MenuMethodParams, isCut?
       }
       // 兼容老版本
       const { clipboard } = (VXETableInstance as any).globalStore || (VXETableInstance as any).config
-      text = clipboard.text
+      text = clipboard ? clipboard.text : ''
     } else {
       // 操作内置剪贴板
       text = XEUtils.toValueString(XEUtils.get(row, column.field))
