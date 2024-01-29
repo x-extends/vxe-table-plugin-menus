@@ -307,7 +307,7 @@ function setup (options?: VXETablePluginMenusOptions) {
 }
 
 /**
- * 基于 vxe-table 表格的增强插件，提供实用的快捷菜单集
+ * 基于 vxe-table 表格的扩展插件，提供实用的快捷菜单配置
  */
 export const VXETablePluginMenus = {
   setup,
@@ -315,7 +315,7 @@ export const VXETablePluginMenus = {
     VXETableInstance = vxetable
     // 检查版本
     if (!/^(2|3)\./.test(vxetable.version)) {
-      console.error('[vxe-table-plugin-menus] Version vxe-table 3.x is required')
+      console.error('[vxe-table-plugin-menus 3.x] Version vxe-table 3.x is required')
     }
 
     setup(options)
