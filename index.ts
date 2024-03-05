@@ -308,12 +308,12 @@ function pluginSetup (options?: VXETablePluginMenusOptions) {
  * 基于 vxe-table 表格的扩展插件，提供实用的快捷菜单配置
  */
 export const VXETablePluginMenus = {
-  setup: pluginSetup,
+  config: pluginSetup,
   install (vxetable: VXETableCore, options?: VXETablePluginMenusOptions) {
     VXETableInstance = vxetable
     // 检查版本
     if (!/^(4)\./.test(vxetable.version)) {
-      console.error('[vxe-table-plugin-menus] Version vxe-table 4.x is required')
+      console.error('[vxe-table-plugin-menus 4.x] Version vxe-table 4.x is required')
     }
 
     pluginSetup(options)
