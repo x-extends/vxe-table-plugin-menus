@@ -14,7 +14,7 @@
 ## Installing
 
 ```shell
-npm install xe-utils vxe-table@3 vxe-table-plugin-menus@2
+npm install vxe-table@legacy vxe-table-plugin-menus@legacy
 ```
 
 ```javascript
