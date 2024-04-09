@@ -25,6 +25,29 @@ function handleFixedColumn (fixed: VxeColumnPropTypes.Fixed) {
   }
 }
 
+function getClipboardConfig () {
+  if ((VXETableInstance as any).globalStore) {
+    return (VXETableInstance as any).globalStore
+  }
+  // 兼容老版本
+  if ((VXETableInstance as any).config) {
+    return (VXETableInstance as any).config
+  }
+  return {}
+}
+
+function setClipboardConfig (clipObj: {
+  text: string
+  html: string
+}) {
+  if ((VXETableInstance as any).globalStore) {
+    (VXETableInstance as any).globalStore.clipboard = clipObj
+  } else if ((VXETableInstance as any).config) {
+    // 兼容老版本
+    (VXETableInstance as any).config.clipboard = clipObj
+  }
+}
+
 let copyElem: HTMLTextAreaElement
 
 function handleText (content: string | number) {
@@ -69,18 +92,12 @@ function handleCopyOrCut (params: VxeGlobalMenusHandles.MenuMethodParams, isCut?
       } else {
         $table.triggerCopyCellAreaEvent($event)
       }
-      // 兼容老版本
-      const { clipboard } = (VXETableInstance as any).globalStore || (VXETableInstance as any).config
+      const { clipboard } = getClipboardConfig()
       text = clipboard ? clipboard.text : ''
     } else {
       // 操作内置剪贴板
       text = XEUtils.toValueString(XEUtils.get(row, column.field))
-      // 兼容老版本
-      if ((VXETableInstance as any).globalStore) {
-        (VXETableInstance as any).globalStore.clipboard = { text, html: '' }
-      } else if ((VXETableInstance as any).config) {
-        (VXETableInstance as any).config.clipboard = { text, html: '' }
-      }
+      setClipboardConfig({ text, html: '' })
     }
     // 开始复制操作
     if (XEUtils.isFunction(handleCopy)) {
@@ -250,7 +267,7 @@ function checkPrivilege (item: VxeTableDefines.MenuFirstOption | VxeTableDefines
               switch (code) {
                 case 'PASTE_CELL': {
                   // 兼容老版本
-                  const { clipboard } = (VXETableInstance as any).globalStore || (VXETableInstance as any).config
+                  const { clipboard } = getClipboardConfig()
                   item.disabled = !clipboard || !clipboard.text
                   break
                 }
@@ -465,7 +482,7 @@ export const VXETablePluginMenus = {
             $table.triggerPasteCellAreaEvent($event)
           } else {
             // 兼容老版本
-            const { clipboard } = (vxetable as any).globalStore || (vxetable as any).config
+            const { clipboard } = getClipboardConfig()
             // 读取内置剪贴板
             if (clipboard && clipboard.text) {
               XEUtils.set(row, column.field, clipboard.text)
