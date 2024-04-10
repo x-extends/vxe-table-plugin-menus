@@ -25,26 +25,29 @@ function handleFixedColumn (fixed: string) {
   }
 }
 
-function getClipboardConfig ($table: Table) {
-  if ((VXETableInstance as any).globalStore) {
-    return (VXETableInstance as any).globalStore
+function getClipboardObj ($table: Table) {
+  const globalStore = (VXETableInstance as any).globalStore
+  if (globalStore && globalStore.clipboard) {
+    return globalStore.clipboard
   }
   // 兼容老版本
   if ((VXETableInstance as any).config) {
-    return (VXETableInstance as any).config
+    return (VXETableInstance as any).config.clipboard
   }
+  // 兼容老版本
   if ($table && $table.$vxe) {
-    return $table.$vxe
+    return $table.$vxe.clipboard
   }
-  return {}
+  return null
 }
 
 function setClipboardConfig ($table: Table, clipObj: {
   text: string
   html: string
 }) {
-  if ((VXETableInstance as any).globalStore) {
-    (VXETableInstance as any).globalStore.clipboard = clipObj
+  const globalStore = (VXETableInstance as any).globalStore
+  if (globalStore && globalStore.clipboard) {
+    globalStore.clipboard = clipObj
   } else if ($table && $table.$vxe) {
     // 兼容老版本
     $table.$vxe.clipboard = clipObj
@@ -91,8 +94,7 @@ function handleCopyOrCut (params: VxeGlobalMenusHandles.MenuMethodParams, isCut?
       } else {
         $table.triggerCopyCellAreaEvent($event)
       }
-      // 兼容老版本
-      const { clipboard } = getClipboardConfig($table)
+      const clipboard = getClipboardObj($table)
       text = clipboard.text
     } else {
       // 操作内置剪贴板
@@ -272,8 +274,7 @@ function checkPrivilege (item: MenuFirstOption | MenuChildOption, params: Interc
             if (!item.disabled) {
               switch (code) {
                 case 'PASTE_CELL': {
-                  // 兼容老版本
-                  const { clipboard } = getClipboardConfig($table)
+                  const clipboard = getClipboardObj($table)
                   item.disabled = !clipboard || !clipboard.text
                   break
                 }
@@ -491,8 +492,7 @@ export const VXETablePluginMenus = {
           if ($table.mouseConfig && $table.mouseOpts.area) {
             $table.triggerPasteCellAreaEvent($event)
           } else {
-            // 兼容老版本
-            const { clipboard } = getClipboardConfig($table)
+            const clipboard = getClipboardObj($table)
             // 读取内置剪贴板
             if (clipboard && clipboard.text) {
               XEUtils.set(row, column.field, clipboard.text)
