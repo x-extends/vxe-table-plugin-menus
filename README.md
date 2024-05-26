@@ -63,6 +63,7 @@ VXETable.use(VXETablePluginMenus, {
 | INSERT_AT_ROW | 插入数据到指定位置 | records |
 | INSERT_AT_ACTIVED_ROW | 插入数据到指定位置并激活编辑状态 | Array\<records, field\> |
 | DELETE_ROW | 移除行数据 | — |
+| DELETE_AREA_ROW | 如果启用 mouse-config.area 功能，移除所选区域行数据 | — |
 | DELETE_CHECKBOX_ROW  | 移除复选框选中行数据 | — |
 | DELETE_ALL | 移除所有行数据 | — |
 | CLEAR_SORT | 清除所选列排序条件 | — |

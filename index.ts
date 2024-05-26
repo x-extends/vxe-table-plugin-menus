@@ -209,6 +209,7 @@ function checkPrivilege (item: MenuFirstOption | MenuChildOption, params: Interc
     case 'INSERT_AT_ROW':
     case 'INSERT_AT_ACTIVED_ROW':
     case 'DELETE_ROW':
+    case 'DELETE_AREA_ROW':
     case 'CLEAR_SORT':
     case 'SORT_ASC':
     case 'SORT_DESC':
@@ -678,6 +679,19 @@ export const VXETablePluginMenus = {
           if (row) {
             $table.remove(row)
           }
+        }
+      },
+      /**
+       * 如果启用 mouse-config.area 功能，移除所选区域行数据
+       */
+      DELETE_AREA_ROW: {
+        menuMethod (params) {
+          const { $table } = params
+          const cellAreas = $table.mouseConfig && $table.mouseOpts.area ? $table.getCellAreas() : []
+          return cellAreas.forEach(areaItem => {
+            const { rows } = areaItem
+            $table.remove(rows)
+          })
         }
       },
       // 已废弃
