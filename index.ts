@@ -677,7 +677,7 @@ export const VXETablePluginMenus = {
        */
       DELETE_AREA_ROW: {
         menuMethod (params) {
-          const { $table, row } = params
+          const { $table } = params
           const { props } = $table
           const { mouseConfig } = props
           const { computeMouseOpts } = $table.getComputeMaps()
@@ -919,8 +919,8 @@ export const VXETablePluginMenus = {
   }
 }
 
-if (typeof window !== 'undefined' && window.VXETable && window.VXETable.use) {
-  window.VXETable.use(VXETablePluginMenus)
-}
+// if (typeof window !== 'undefined' && window.VXETable && window.VXETable.use) {
+//   window.VXETable.use(VXETablePluginMenus)
+// }
 
 export default VXETablePluginMenus
