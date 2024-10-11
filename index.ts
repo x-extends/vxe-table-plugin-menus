@@ -614,8 +614,27 @@ export const VXETablePluginMenus = {
       },
       /**
        * 插入数据并激活编辑状态
+       * @deprecated
        */
       INSERT_ACTIVED_ROW: {
+        menuMethod (params) {
+          const { $table, menu, column } = params
+          const args: any[] = menu.params || [] // [{}, 'field']
+          $table.insert(args[0])
+            .then(({ row }) => {
+              if ($table.setEditCell) {
+                $table.setEditCell(row, args[1] || column)
+              } else {
+              // 兼容老版本
+                $table.setActiveCell(row, args[1] || column.field)
+              }
+            })
+        }
+      },
+      /**
+       * 插入数据并激活编辑状态
+       */
+      INSERT_EDIT_ROW: {
         menuMethod (params) {
           const { $table, menu, column } = params
           const args: any[] = menu.params || [] // [{}, 'field']
@@ -643,8 +662,29 @@ export const VXETablePluginMenus = {
       },
       /**
        * 插入数据到指定位置并激活编辑状态
+       * @deprecated
        */
       INSERT_AT_ACTIVED_ROW: {
+        menuMethod (params) {
+          const { $table, menu, row, column } = params
+          if (row) {
+            const args: any[] = menu.params || [] // [{}, 'field']
+            $table.insertAt(args[0], row)
+              .then(({ row }) => {
+                if ($table.setEditCell) {
+                  $table.setEditCell(row, args[1] || column)
+                } else {
+                // 兼容老版本
+                  $table.setActiveCell(row, args[1] || column.field)
+                }
+              })
+          }
+        }
+      },
+      /**
+       * 插入数据到指定位置并激活编辑状态
+       */
+      INSERT_AT_EDIT_ROW: {
         menuMethod (params) {
           const { $table, menu, row, column } = params
           if (row) {
