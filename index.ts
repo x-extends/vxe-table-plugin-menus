@@ -30,7 +30,7 @@ function getClipboardObj ($table: any) {
   if ($table && $table.$vxe) {
     return $table.$vxe.clipboard
   }
-  return {}
+  return null
 }
 
 function setClipboardConfig ($table: any, clipObj: {
@@ -87,7 +87,7 @@ function handleCopyOrCut (params: any, isCut?: boolean) {
         $table.triggerCopyCellAreaEvent($event)
       }
       const clipboard = getClipboardObj($table)
-      text = clipboard.text || ''
+      text = clipboard ? clipboard.text : ''
     } else {
       // 操作内置剪贴板
       text = XEUtils.toValueString(XEUtils.get(row, column.field))
