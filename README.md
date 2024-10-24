@@ -59,9 +59,9 @@ VXETable.use(VXETablePluginMenus, {
 | EDIT_CELL | 编辑选中单元格 | — |
 | EDIT_ROW | 编辑选中行并默认激活第一个编辑的单元格 | — |
 | INSERT_ROW | 插入数据 | records |
-| INSERT_ACTIVED_ROW | 插入数据并激活编辑状态 | Array\<records, field\> |
+| INSERT_EDIT_ROW | 插入数据并激活编辑状态 | Array\<records, field\> |
 | INSERT_AT_ROW | 插入数据到指定位置 | records |
-| INSERT_AT_ACTIVED_ROW | 插入数据到指定位置并激活编辑状态 | Array\<records, field\> |
+| INSERT_AT_EDIT_ROW | 插入数据到指定位置并激活编辑状态 | Array\<records, field\> |
 | DELETE_ROW | 移除行数据 | — |
 | DELETE_AREA_ROW | 如果启用 mouse-config.area 功能，移除所选区域行数据 | — |
 | DELETE_CHECKBOX_ROW  | 移除复选框选中行数据 | — |
@@ -93,7 +93,7 @@ VXETable.use(VXETablePluginMenus, {
 ```html
 <vxe-table
   :data="tableData"
-  :context-menu="{body: {options: bodyMenus}}"
+  :menu-config="menuConfig"
   :edit-config="{trigger: 'click', mode: 'cell'}">
   <vxe-column type="seq" width="60"></vxe-column>
   <vxe-column field="name" title="Name" :edit-render="{name: 'input'}"></vxe-column>
@@ -111,12 +111,16 @@ export default {
         { id: 101,  name: 'test2', age: 32, sex: '0' },
         { id: 102,  name: 'test3', age: 36, sex: '1' }
       ],
-      bodyMenus: [
-        [
-          { code: 'EXPORT_ALL', name: '导出.csv' },
-          { code: 'INSERT_ACTIVED_ROW', name: '新增' }
-        ]
-      ]
+      menuConfig: {
+        body: {
+          options: [
+            [
+              { code: 'EXPORT_ALL', name: '导出.csv' },
+              { code: 'INSERT_EDIT_ROW', name: '新增' }
+            ]
+          ]
+        }
+      }
     }
   }
 }

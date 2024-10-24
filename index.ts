@@ -23,14 +23,14 @@ function getClipboardObj ($table: any) {
     return globalStore.clipboard
   }
   // 兼容老版本
-  if ((VXETableInstance as any).config) {
+  if ((VXETableInstance as any).config && (VXETableInstance as any).config.clipboard) {
     return (VXETableInstance as any).config.clipboard
   }
   // 兼容老版本
   if ($table && $table.$vxe) {
     return $table.$vxe.clipboard
   }
-  return null
+  return {}
 }
 
 function setClipboardConfig ($table: any, clipObj: {
@@ -87,7 +87,7 @@ function handleCopyOrCut (params: any, isCut?: boolean) {
         $table.triggerCopyCellAreaEvent($event)
       }
       const clipboard = getClipboardObj($table)
-      text = clipboard.text
+      text = clipboard.text || ''
     } else {
       // 操作内置剪贴板
       text = XEUtils.toValueString(XEUtils.get(row, column.field))
@@ -200,6 +200,7 @@ function checkPrivilege (item: any, params: any) {
     case 'REVERT_ROW':
     case 'INSERT_AT_ROW':
     case 'INSERT_AT_ACTIVED_ROW':
+    case 'INSERT_AT_EDIT_ROW':
     case 'DELETE_ROW':
     case 'DELETE_AREA_ROW':
     case 'CLEAR_SORT':
@@ -615,8 +616,27 @@ export const VXETablePluginMenus = {
       },
       /**
        * 插入数据并激活编辑状态
+       * @deprecated
        */
       INSERT_ACTIVED_ROW: {
+        menuMethod (params: any) {
+          const { $table, menu, column } = params
+          const args: any[] = menu.params || []
+          $table.insert(args[0])
+            .then(({ row }: any) => {
+              if ($table.setEditCell) {
+                $table.setEditCell(row, args[1] || column)
+              } else {
+              // 兼容老版本
+                $table.setActiveCell(row, args[1] || column.field)
+              }
+            })
+        }
+      },
+      /**
+       * 插入数据并激活编辑状态
+       */
+      INSERT_EDIT_ROW: {
         menuMethod (params: any) {
           const { $table, menu, column } = params
           const args: any[] = menu.params || []
@@ -644,8 +664,29 @@ export const VXETablePluginMenus = {
       },
       /**
        * 插入数据到指定位置并激活编辑状态
+       * @deprecated
        */
       INSERT_AT_ACTIVED_ROW: {
+        menuMethod (params: any) {
+          const { $table, menu, row, column } = params
+          if (row) {
+            const args: any[] = menu.params || []
+            $table.insertAt(args[0], row)
+              .then(({ row }: any) => {
+                if ($table.setEditCell) {
+                  $table.setEditCell(row, args[1] || column)
+                } else {
+                // 兼容老版本
+                  $table.setActiveCell(row, args[1] || column.field)
+                }
+              })
+          }
+        }
+      },
+      /**
+       * 插入数据到指定位置并激活编辑状态
+       */
+      INSERT_AT_EDIT_ROW: {
         menuMethod (params: any) {
           const { $table, menu, row, column } = params
           if (row) {
@@ -808,7 +849,7 @@ export const VXETablePluginMenus = {
           const { $table, menu, row } = params
           if (row) {
             const opts = { data: [row] }
-            $table.exportData(XEUtils.assign(opts, menu.params[0]))
+            $table.exportData(XEUtils.assign({}, menu.params ? menu.params[0] : {}, opts))
           }
         }
       },
@@ -818,7 +859,7 @@ export const VXETablePluginMenus = {
           abandoned('EXPORT_SELECTED_ROW', 'EXPORT_CHECKBOX_ROW')
           const { $table, menu } = params
           const opts = { data: $table.getCheckboxRecords() }
-          $table.exportData(XEUtils.assign(opts, menu.params[0]))
+          $table.exportData(XEUtils.assign({}, menu.params ? menu.params[0] : {}, opts))
         }
       },
       /**
