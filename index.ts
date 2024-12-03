@@ -206,6 +206,7 @@ function checkPrivilege (item: VxeTableDefines.MenuFirstOption | VxeTableDefines
     case 'REVERT_ROW':
     case 'INSERT_AT_ROW':
     case 'INSERT_AT_ACTIVED_ROW':
+    case 'INSERT_AT_EDIT_ROW':
     case 'DELETE_ROW':
     case 'DELETE_AREA_ROW':
     case 'CLEAR_SORT':

@@ -93,7 +93,7 @@ VXETable.use(VXETablePluginMenus, {
 ```html
 <vxe-table
   :data="tableData"
-  :context-menu="{body: {options: bodyMenus}}"
+  :menu-config="menuConfig"
   :edit-config="{trigger: 'click', mode: 'cell'}">
   <vxe-column type="seq" width="60"></vxe-column>
   <vxe-column field="name" title="Name" :edit-render="{name: 'input'}"></vxe-column>
@@ -111,12 +111,16 @@ export default {
         { id: 101,  name: 'test2', age: 32, sex: '0' },
         { id: 102,  name: 'test3', age: 36, sex: '1' }
       ],
-      bodyMenus: [
-        [
-          { code: 'EXPORT_ALL', name: '导出.csv' },
-          { code: 'INSERT_EDIT_ROW', name: '新增' }
-        ]
-      ]
+      menuConfig: {
+        body: {
+          options: [
+            [
+              { code: 'EXPORT_ALL', name: '导出.csv' },
+              { code: 'INSERT_EDIT_ROW', name: '新增' }
+            ]
+          ]
+        }
+      }
     }
   }
 }
